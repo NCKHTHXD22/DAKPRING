@@ -111,18 +111,33 @@ async function getFollowerProfile(userId) {
 
 // ─── Public API ───
 
-// Đồng bộ nhanh: lấy ID từ Zalo + merge profile từ Redis cache (không gọi API getprofile)
-// Dùng khi server chạy ở IP nước ngoài (Render) — tên sẽ có sau khi user nhắn tin
+// Đồng bộ follower: lấy ID từ Zalo + merge Redis cache + gọi getprofile cho user chưa có tên
+// Nếu chạy từ IP Việt Nam (local) → lấy được tên đầy đủ
+// Nếu chạy từ IP nước ngoài (Render) → getprofile trả rỗng, bỏ qua, tên tự cập nhật qua webhook
 async function syncFollowers() {
-  console.log('[Follower] Đồng bộ danh sách follower (Redis cache mode)...');
+  console.log('[Follower] Đang đồng bộ danh sách follower...');
   const ids = await fetchAllFollowerIds();
 
-  // Merge với profile đã có trong Redis từ webhook
+  // Lấy profile từ cache webhook trước
   const profileMap = await getProfiles(ids);
 
+  // Gọi Zalo API cho những user chưa có tên (hoạt động tốt từ IP Việt Nam)
+  const { saveProfile } = require('./profileCache');
+  const missingIds = ids.filter(id => !profileMap[id]?.display_name);
+  console.log(`[Follower] Cần fetch ${missingIds.length} profile từ Zalo API...`);
+  for (const userId of missingIds) {
+    try {
+      const profile = await getFollowerProfile(userId);
+      if (profile.display_name) {
+        profileMap[userId] = profile;
+        await saveProfile(userId, profile.display_name, profile.avatar);
+      }
+    } catch { /* bỏ qua lỗi từng user */ }
+    await new Promise(r => setTimeout(r, 250));
+  }
+
   const namedCount = ids.filter(id => profileMap[id]?.display_name).length;
-  const missingCount = ids.length - namedCount;
-  console.log(`[Follower] ${ids.length} follower | có tên: ${namedCount} | chưa có tên: ${missingCount} (cần nhắn tin OA)`);
+  console.log(`[Follower] ${ids.length} follower | có tên: ${namedCount} | chưa có tên: ${ids.length - namedCount}`);
 
   const profiles = ids.map(id => ({
     user_id: id,
@@ -140,7 +155,7 @@ async function syncFollowers() {
     saveToFile(profiles);
   }
 
-  console.log(`[Follower] Đã lưu ${profiles.length} follower`);
+  console.log(`[Follower] Đã đồng bộ ${profiles.length} follower`);
   return profiles;
 }
 

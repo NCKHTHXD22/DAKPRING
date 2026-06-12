@@ -236,15 +236,18 @@ async function sendZaloFileToGroup(groupId, fileToken) {
   }
 }
 
+// Lấy profile 1 user từ Zalo API (chỉ hoạt động từ IP Việt Nam)
+// user_id phải là số nguyên trong JSON — KHÔNG dùng String() hay JSON.stringify
 async function getZaloUserProfile(userId) {
   try {
     const token = getToken();
+    const data = encodeURIComponent(`{"user_id":${userId}}`);
     const res = await axios.get(
-      `https://openapi.zalo.me/v2.0/oa/getprofile?data=${encodeURIComponent(JSON.stringify({ user_id: String(userId) }))}`,
+      `https://openapi.zalo.me/v2.0/oa/getprofile?data=${data}`,
       { headers: { access_token: token } }
     );
-    console.log(`[Zalo] getprofile userId=${userId} → error=${res.data?.error} name="${res.data?.data?.display_name}" raw=${JSON.stringify(res.data)}`);
     if (res.data?.error === 0) return res.data.data;
+    console.warn(`[Zalo] getprofile userId=${userId} error=${res.data?.error}: ${res.data?.message}`);
     return null;
   } catch (err) {
     console.error('[Zalo] Lấy profile thất bại:', err.message);

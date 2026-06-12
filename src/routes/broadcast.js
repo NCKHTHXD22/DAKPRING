@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const multer = require('multer')
 const requireRole = require('../middleware/requireRole')
-const { syncFollowers, getStoredFollowers, getSyncedAt } = require('../services/followerService')
+const { syncFollowers, syncFollowersFull, getStoredFollowers, getSyncedAt } = require('../services/followerService')
 const { getStoredGroups, addGroup, removeGroup } = require('../services/groupService')
 const { sendToUsers, getJob } = require('../services/broadcastService')
 const { getLogs, deleteLog, clearAllLogs } = require('../services/logService')
@@ -77,6 +77,16 @@ router.post('/followers/sync', async (req, res) => {
         code: 'TOKEN_EXPIRED',
       })
     }
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Sync đầy đủ: gọi Zalo API getprofile cho user chưa có tên (chỉ dùng từ IP VN)
+router.post('/followers/sync-full', async (req, res) => {
+  try {
+    const followers = await syncFollowersFull()
+    res.json({ ok: true, count: followers.length, named: followers.filter(f => f.display_name).length })
+  } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })

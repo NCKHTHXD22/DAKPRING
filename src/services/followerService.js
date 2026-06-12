@@ -110,27 +110,19 @@ async function getFollowerProfile(userId) {
 }
 
 // ─── Public API ───
+
+// Đồng bộ nhanh: lấy ID từ Zalo + merge profile từ Redis cache (không gọi API getprofile)
+// Dùng khi server chạy ở IP nước ngoài (Render) — tên sẽ có sau khi user nhắn tin
 async function syncFollowers() {
-  console.log('[Follower] Đang đồng bộ danh sách follower...');
+  console.log('[Follower] Đồng bộ danh sách follower (Redis cache mode)...');
   const ids = await fetchAllFollowerIds();
 
-  // Lấy profile từ cache webhook trước
+  // Merge với profile đã có trong Redis từ webhook
   const profileMap = await getProfiles(ids);
 
-  // Fetch từ Zalo API cho những user chưa có tên (hoạt động tốt từ IP Việt Nam)
-  const missingIds = ids.filter(id => !profileMap[id]?.display_name);
-  console.log(`[Follower] Cần fetch ${missingIds.length} profile từ Zalo API...`);
-  for (const userId of missingIds) {
-    try {
-      const profile = await getFollowerProfile(userId);
-      if (profile.display_name) {
-        profileMap[userId] = profile;
-        const { saveProfile } = require('./profileCache');
-        await saveProfile(userId, profile.display_name, profile.avatar);
-      }
-    } catch { /* bỏ qua lỗi profile từng user */ }
-    await new Promise(r => setTimeout(r, 250));
-  }
+  const namedCount = ids.filter(id => profileMap[id]?.display_name).length;
+  const missingCount = ids.length - namedCount;
+  console.log(`[Follower] ${ids.length} follower | có tên: ${namedCount} | chưa có tên: ${missingCount} (cần nhắn tin OA)`);
 
   const profiles = ids.map(id => ({
     user_id: id,
@@ -141,7 +133,6 @@ async function syncFollowers() {
   _cache = profiles;
   _syncedAt = new Date().toISOString();
 
-  // Lưu vào Redis nếu có, fallback file
   const redisSaved = await redisCmd('SET', KEYS.OA_FOLLOWERS, JSON.stringify(profiles));
   if (redisSaved !== null) {
     await redisCmd('SET', KEYS.OA_FOLLOWERS_SYNCED_AT, _syncedAt);
@@ -149,7 +140,50 @@ async function syncFollowers() {
     saveToFile(profiles);
   }
 
-  console.log(`[Follower] Đã đồng bộ ${profiles.length} follower`);
+  console.log(`[Follower] Đã lưu ${profiles.length} follower`);
+  return profiles;
+}
+
+// Đồng bộ đầy đủ: gọi Zalo API getprofile cho user chưa có tên
+// Chỉ dùng từ IP Việt Nam — gọi thủ công qua API route /api/broadcast/followers/sync-full
+async function syncFollowersFull() {
+  console.log('[Follower] Đồng bộ đầy đủ (có gọi Zalo API getprofile)...');
+  const ids = await fetchAllFollowerIds();
+  const profileMap = await getProfiles(ids);
+
+  const missingIds = ids.filter(id => !profileMap[id]?.display_name);
+  console.log(`[Follower] Cần fetch ${missingIds.length} profile từ Zalo API...`);
+
+  const { saveProfile } = require('./profileCache');
+  let fetched = 0;
+  for (const userId of missingIds) {
+    try {
+      const profile = await getFollowerProfile(userId);
+      if (profile.display_name) {
+        profileMap[userId] = profile;
+        await saveProfile(userId, profile.display_name, profile.avatar);
+        fetched++;
+      }
+    } catch { /* bỏ qua lỗi từng user */ }
+    await new Promise(r => setTimeout(r, 300));
+  }
+  console.log(`[Follower] Đã fetch được ${fetched}/${missingIds.length} profile từ API`);
+
+  const profiles = ids.map(id => ({
+    user_id: id,
+    display_name: profileMap[id]?.display_name || '',
+    avatar: profileMap[id]?.avatar || '',
+  }));
+
+  _cache = profiles;
+  _syncedAt = new Date().toISOString();
+  const redisSaved = await redisCmd('SET', KEYS.OA_FOLLOWERS, JSON.stringify(profiles));
+  if (redisSaved !== null) {
+    await redisCmd('SET', KEYS.OA_FOLLOWERS_SYNCED_AT, _syncedAt);
+  } else {
+    saveToFile(profiles);
+  }
+  console.log(`[Follower] Đã lưu ${profiles.length} follower (full sync)`);
   return profiles;
 }
 
@@ -206,4 +240,4 @@ async function patchFollowerProfile(userId, displayName, avatar = '') {
   }
 }
 
-module.exports = { syncFollowers, getStoredFollowers, getSyncedAt, patchFollowerProfile };
+module.exports = { syncFollowers, syncFollowersFull, getStoredFollowers, getSyncedAt, patchFollowerProfile };

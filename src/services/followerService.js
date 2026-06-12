@@ -184,4 +184,26 @@ async function getSyncedAt() {
   return fromFile?.syncedAt || null;
 }
 
-module.exports = { syncFollowers, getStoredFollowers, getSyncedAt };
+// Cập nhật tên/avatar cho 1 follower trong danh sách (gọi sau webhook)
+// Nếu user chưa có trong danh sách → tự động thêm mới
+async function patchFollowerProfile(userId, displayName, avatar = '') {
+  if (!userId || !displayName || displayName === userId) return;
+  try {
+    const followers = await getStoredFollowers();
+    const idx = followers.findIndex(f => f.user_id === userId);
+    if (idx !== -1) {
+      // Cập nhật entry đã có
+      followers[idx].display_name = displayName;
+      if (avatar) followers[idx].avatar = avatar;
+    } else {
+      // Thêm mới nếu chưa có (vd: user nhắn trước khi sync)
+      followers.push({ user_id: userId, display_name: displayName, avatar: avatar || '' });
+    }
+    _cache = followers;
+    await redisCmd('SET', KEYS.OA_FOLLOWERS, JSON.stringify(followers));
+  } catch (e) {
+    console.warn('[Follower] patchFollowerProfile lỗi:', e.message);
+  }
+}
+
+module.exports = { syncFollowers, getStoredFollowers, getSyncedAt, patchFollowerProfile };

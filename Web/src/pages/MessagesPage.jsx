@@ -741,6 +741,15 @@ function FollowersTab() {
             </div>
           </CardHeader>
           <CardContent>
+            {!fLoading && followers.length > 0 && followers.every(f => !hasRealName(f)) && (
+              <div className="mb-3 flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                <span className="text-base shrink-0">ℹ️</span>
+                <span>
+                  Zalo API chỉ trả tên khi người dùng <strong>nhắn tin với OA ít nhất 1 lần</strong>.
+                  Những follower chỉ follow mà chưa chat sẽ hiển thị ID — tên tự cập nhật khi họ nhắn tin.
+                </span>
+              </div>
+            )}
             {fLoading && <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-slate-400" /></div>}
             {!fLoading && (
               <div className="overflow-x-auto">

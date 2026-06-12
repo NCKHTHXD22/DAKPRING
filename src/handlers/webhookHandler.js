@@ -7,6 +7,7 @@ const { searchDossier, extractDossiers, sendDossierCard, isDossierCode } = requi
 const { sendWaterOutageCard } = require('../services/catNuocService');
 const { sendOutageCard } = require('../services/catDienService');
 const { addGroup } = require('../services/groupService');
+const { patchFollowerProfile } = require('../services/followerService');
 const KEYS = require('../config/redisKeys');
 
 // Lưu trạng thái hội thoại theo userId (tự xóa sau 10 phút)
@@ -79,39 +80,17 @@ async function handleWebhook(body) {
 
   console.log(`[Event] ${eventName} | userId: ${userId}`);
 
-  // Cache profile từ mọi sự kiện có sender info
+  // Cache profile từ mọi sự kiện có sender info — lưu cả vào profile cache lẫn danh sách followers
   const displayName = body.sender?.display_name || body.follower?.display_name || '';
   const avatar = body.sender?.avatar || body.follower?.avatar || '';
   if (displayName) {
     saveProfile(userId, displayName, avatar).catch(() => {});
+    patchFollowerProfile(userId, displayName, avatar).catch(() => {});
   }
 
-  // Cập nhật profile khi user thay đổi tên/avatar
+  // Cập nhật profile khi user thay đổi tên/avatar (patchFollowerProfile đã xử lý ở trên)
   if (eventName === 'update_user_info') {
-    if (displayName) {
-      console.log(`[Profile] Cập nhật thông tin: ${userId} → "${displayName}"`);
-      // Cập nhật luôn vào danh sách followers trong Redis nếu có
-      try {
-        const { getStoredFollowers } = require('../services/followerService');
-        const followers = await getStoredFollowers();
-        const idx = followers.findIndex(f => f.user_id === userId);
-        if (idx !== -1) {
-          followers[idx].display_name = displayName;
-          followers[idx].avatar = avatar;
-          // Ghi lại vào Redis
-          const axios = require('axios');
-          const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-          const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-          if (redisUrl && redisToken) {
-            await axios.post(redisUrl, ['SET', KEYS.OA_FOLLOWERS, JSON.stringify(followers)], {
-              headers: { Authorization: `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-            });
-          }
-        }
-      } catch (e) {
-        console.warn('[Profile] Không cập nhật được followers list:', e.message);
-      }
-    }
+    if (displayName) console.log(`[Profile] Cập nhật thông tin: ${userId} → "${displayName}"`);
     return;
   }
 

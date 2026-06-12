@@ -239,7 +239,7 @@ app.get('/', async (req, res) => {
       return res.type('html').send(`<h2>❌ Lỗi: ${err.message}</h2>`);
     }
   }
-  res.type('html').send(`<!DOCTYPE html><html><head><meta name="zalo-platform-site-verification" content="OFpW5E3FJ1Xguy4-eUrB0sVec1wBdar8EJ4r" /></head><body>UBND phuong Dak Pring - OA Zalo</body></html>`);
+  res.type('html').send(`<!DOCTYPE html><html><head><meta name="zalo-platform-site-verification" content="OFpW5E3FJ1Xguy4-eUrB0sVec1wBdar8EJ4r" /><meta name="zalo-platform-site-verification" content="V--V2FNo738yvPTapTG4GplufKxNZd0PCJ8q" /></head><body>UBND phuong Dak Pring - OA Zalo</body></html>`);
 });
 
 app.get('/health', (req, res) => {

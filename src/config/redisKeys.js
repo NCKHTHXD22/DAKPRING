@@ -24,4 +24,7 @@ module.exports = {
 
   // ── Cache profile người dùng (hàm vì cần userId) ───────
   PROFILE: (userId) =>        `${NS}_profile:${userId}`,
+
+  // ── PKCE code_verifier khi cấp quyền OAuth (hàm vì cần state) ──
+  PKCE_VERIFIER: (state) =>   `${NS}_pkce:${state}`,
 };

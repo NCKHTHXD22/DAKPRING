@@ -1,5 +1,6 @@
 ﻿require('dotenv').config();
 const path = require('path');
+const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -9,6 +10,20 @@ const mongoose = require('mongoose');
 const CONFIG = require('./src/config');
 const { handleWebhook } = require('./src/handlers/webhookHandler');
 const { setTokensManually } = require('./src/utils/zaloToken');
+const KEYS = require('./src/config/redisKeys');
+
+async function redisCmd(...args) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  try {
+    const axios = require('axios');
+    const res = await axios.post(url, args, {
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    });
+    return res.data.result;
+  } catch { return null; }
+}
 
 const app = express();
 
@@ -141,6 +156,52 @@ app.post('/webhook', async (req, res) => {
     await handleWebhook(req.body);
   } catch (err) {
     console.error('[Webhook] Lỗi xử lý:', err.message);
+  }
+});
+
+// ── Cấp quyền Zalo OAuth qua PKCE ──────────────────────
+app.get('/oauth-start', async (req, res) => {
+  const verifier = crypto.randomBytes(48).toString('base64url');
+  const challenge = crypto.createHash('sha256').update(verifier).digest('base64url');
+  const state = crypto.randomBytes(16).toString('hex');
+
+  await redisCmd('SET', KEYS.PKCE_VERIFIER(state), verifier, 'EX', 600);
+
+  const url = new URL('https://oauth.zaloapp.com/v4/oa/permission');
+  url.searchParams.set('app_id', process.env.ZALO_APP_ID);
+  url.searchParams.set('redirect_uri', `${process.env.PUBLIC_URL}/oauth`);
+  url.searchParams.set('code_challenge', challenge);
+  url.searchParams.set('state', state);
+  res.redirect(url.toString());
+});
+
+app.get('/oauth', async (req, res) => {
+  const { code, state } = req.query;
+  if (!code || !state) return res.type('html').send('<h2>❌ Thiếu code hoặc state</h2>');
+
+  const verifier = await redisCmd('GET', KEYS.PKCE_VERIFIER(state));
+  if (!verifier) return res.type('html').send('<h2>❌ Phiên cấp quyền đã hết hạn, vui lòng thử lại từ /oauth-start</h2>');
+
+  try {
+    const axios = require('axios');
+    const params = new URLSearchParams();
+    params.append('code', code);
+    params.append('app_id', process.env.ZALO_APP_ID);
+    params.append('grant_type', 'authorization_code');
+    params.append('code_verifier', verifier);
+    const r = await axios.post(
+      'https://oauth.zaloapp.com/v4/oa/access_token',
+      params,
+      { headers: { secret_key: process.env.ZALO_APP_SECRET, 'Content-Type': 'application/x-www-form-urlencoded' } }
+    );
+    const { access_token, refresh_token } = r.data;
+    if (!access_token) return res.type('html').send(`<h2>❌ Lỗi: ${JSON.stringify(r.data)}</h2>`);
+
+    await setTokensManually(access_token, refresh_token);
+    console.log('[OAuth/PKCE] Lấy token mới thành công');
+    res.type('html').send('<h2>✅ Cấp quyền thành công! Token đã lưu vào Redis. Bot sẵn sàng hoạt động.</h2>');
+  } catch (err) {
+    res.type('html').send(`<h2>❌ Lỗi: ${err.message}</h2>`);
   }
 });
 

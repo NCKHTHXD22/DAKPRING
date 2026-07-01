@@ -20,10 +20,6 @@ module.exports = {
   IOCTC_USERNAME: process.env.IOCTC_USERNAME || '',
   IOCTC_PASSWORD: process.env.IOCTC_PASSWORD || '',
 
-  // ===== DAWACO Proxy (Lịch cắt nước Đà Nẵng) =====
-  DAWACO_PROXY_URL: process.env.DAWACO_PROXY_URL || 'http://103.107.182.191:3456',
-  DAWACO_PROXY_KEY: process.env.DAWACO_PROXY_KEY || 'zalo2025secret',
-
   // ===== EVNCPC (Lịch cắt điện) =====
   EVNCPC_API_URL: process.env.EVNCPC_API_URL || 'https://cskh-api.cpc.vn/api/remote/outages/area',
   EVNCPC_ORG_LIST_URL: process.env.EVNCPC_ORG_LIST_URL || 'https://cskh-api.cpc.vn/api/remote/organizations',

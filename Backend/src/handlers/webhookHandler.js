@@ -8,12 +8,11 @@ const {
 } = require('../services/lookupService');
 const { saveProfile } = require('../services/profileCache');
 const { searchDossier, extractDossiers, sendDossierCard, isDossierCode } = require('../services/hoSoService');
-const { sendWaterOutageCard } = require('../services/catNuocService');
 const { sendOutageCard } = require('../services/catDienService');
 const { addGroup } = require('../services/groupService');
 const { patchFollowerProfile } = require('../services/followerService');
 
-// Trạng thái cục bộ cho luồng IOCTC / cắt nước / cắt điện (không dùng chatState)
+// Trạng thái cục bộ cho luồng IOCTC / cắt điện (không dùng chatState)
 const localStates = new Map();
 
 function setLocalState(userId, state) {
@@ -135,8 +134,7 @@ async function handleWebhook(body) {
       'Bạn có thể:\n' +
       '• 📝 Gửi góp ý, phản ánh — chọn "Góp ý" hoặc nhắn #goopy\n' +
       '• 🔍 Theo dõi phản ánh đã gửi — nhắn #theodoi\n' +
-      '• 📋 Tra cứu hồ sơ hành chính — nhắn #tracuuhoso\n' +
-      '• 💧 Xem lịch cắt nước — nhắn #lichcatnuoc'
+      '• 📋 Tra cứu hồ sơ hành chính — nhắn #tracuuhoso'
     );
     return;
   }
@@ -190,20 +188,11 @@ async function handleWebhook(body) {
     // Không có chatState: kiểm tra local state và trigger
     const localState = localStates.get(userId);
 
-    // Huỷ local state (IOCTC / cắt nước / cắt điện)
+    // Huỷ local state (IOCTC / cắt điện)
     if (['huỷ', 'hủy', 'huy', 'cancel', 'thoát', 'thoat'].includes(lower)) {
       localStates.delete(userId);
       clearCatDienTimer(userId);
       await sendZaloText(userId, 'Đã huỷ. Bạn có thể chọn lại từ menu bên dưới.');
-      return;
-    }
-
-    // ── Đang trong luồng cắt nước ──
-    if (localState === 'waiting_for_catnuoc_filter') {
-      localStates.delete(userId);
-      await sendZaloText(userId, '⏳ Đang tra cứu lịch cắt nước...');
-      try { await sendWaterOutageCard(userId, text); }
-      catch (err) { await sendZaloText(userId, '⚠️ Không thể lấy lịch cắt nước. Vui lòng thử lại sau.'); }
       return;
     }
 
@@ -230,18 +219,6 @@ async function handleWebhook(body) {
           '(Nhắn "huỷ" để thoát)'
         );
       }
-      return;
-    }
-
-    // ── Trigger: Lịch cắt nước ──
-    if (lower.includes('cắt nước') || lower.includes('catnuoc') || lower === '#lichcatnuoc') {
-      setLocalState(userId, 'waiting_for_catnuoc_filter');
-      await sendZaloText(userId,
-        '💧 Tra cứu lịch tạm ngưng cấp nước tại Đà Nẵng.\n\n' +
-        'Nhập tên 📍 phường/xã hoặc 📅 ngày để tra cứu.\n' +
-        'Ví dụ: Hòa Xuân  hoặc  20/05\n\n' +
-        '(Nhắn "tất cả" để xem toàn bộ · Nhắn "huỷ" để thoát)'
-      );
       return;
     }
 

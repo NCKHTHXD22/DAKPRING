@@ -60,11 +60,6 @@ const menuConfig = {
           type: 'text',
           payload: '#lichcatdien',
         },
-        {
-          title: '💧 Lịch cắt nước',
-          type: 'text',
-          payload: '#lichcatnuoc',
-        },
       ],
     },
   ],

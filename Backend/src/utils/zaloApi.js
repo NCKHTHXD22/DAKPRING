@@ -201,7 +201,7 @@ async function sendZaloGroupText(text) {
   return sendZaloToGroup(text, CONFIG.ZALO_GROUP_ID);
 }
 
-// Gửi 1 ảnh đến user (dùng cho card hồ sơ / cắt điện / cắt nước) — throw khi lỗi để fallback text
+// Gửi 1 ảnh đến user (dùng cho card hồ sơ / cắt điện) — throw khi lỗi để fallback text
 async function sendZaloImage(userId, attachmentId) {
   const res = await zaloPost('https://openapi.zalo.me/v2.0/oa/message', {
     recipient: { user_id: String(userId) },

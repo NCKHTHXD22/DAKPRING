@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils'
 import logoImg from '@/images/LogoDakPring.jpg'
 
 const ROLE_LABELS = {
-  superadmin:  'Cán bộ quản trị',
+  superadmin: 'Cán bộ quản trị',
   dept_leader: 'Cán bộ phòng ban',
-  officer:     'Cán bộ phụ trách',
-  staff:       'Nhân viên',
+  officer: 'Cán bộ phụ trách',
+  staff: 'Nhân viên',
 }
 
 function NavItem({ to, icon: Icon, label }) {
@@ -45,7 +45,7 @@ export default function Sidebar() {
   return (
     <aside
       className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col"
-      style={{ background: 'linear-gradient(180deg, #0d1b2a 0%, #0f2336 60%, #112840 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #0c1a42 0%, #16348a 35%, #1d4ed8 70%, #0c1a42 100%)' }}
     >
       {/* Decorative circles */}
       <div className="pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-blue-600/10" />
@@ -58,7 +58,7 @@ export default function Sidebar() {
         </div>
         <div className="min-w-0">
           <p className="text-white text-sm font-bold leading-tight truncate">UBND Xã Đắk Pring</p>
-          <p className="text-blue-400/70 text-[11px] mt-0.5">Hệ thống gửi thông tin và quản lý</p>
+          <p className="text-blue-400/70 text-[11px] mt-0.5">Hệ thống tiếp nhận Phản ánh góp ý và Gửi thông tin thông báo, cảnh báo đến người dân</p>
         </div>
       </div>
 
@@ -89,9 +89,9 @@ export default function Sidebar() {
               Quản trị
             </p>
             <div className="space-y-0.5">
-              <NavItem to="/users"    icon={Users}    label="Tài khoản Admin" />
+              <NavItem to="/users" icon={Users} label="Tài khoản Admin" />
               <NavItem to="/settings" icon={Settings} label="Cài đặt nhóm Zalo" />
-              <NavItem to="/messages" icon={Send}     label="Gửi tin nhắn Zalo" />
+              <NavItem to="/messages" icon={Send} label="Gửi tin nhắn Zalo" />
             </div>
           </>
         )}

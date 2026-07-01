@@ -145,7 +145,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-6">
           <div
-            className="h-16 w-16 rounded-full overflow-hidden mb-3 bg-[#0d1b2a]"
+            className="h-16 w-16 rounded-full overflow-hidden mb-3 bg-[#0c1a42]"
             style={{
               border: '2px solid rgba(37, 99, 235, 0.45)',
               boxShadow: '0 6px 22px rgba(0, 0, 0, 0.55), 0 0 18px rgba(37, 99, 235, 0.25)',

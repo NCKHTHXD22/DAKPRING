@@ -1,7 +1,18 @@
 ﻿const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const CONFIG = require('../config');
 const { sendZaloText, uploadImageToZalo, sendZaloImage } = require('../utils/zaloApi');
 const { htmlToPng } = require('../utils/imageGen');
+
+// Logo (quốc huy) → base64 (đọc 1 lần, nhúng thẳng vào card cho chắc, không phụ thuộc mạng)
+let LOGO_DATA_URI = '';
+try {
+  const buf = fs.readFileSync(path.join(__dirname, '../assets/logo-dakpring.jpg'));
+  LOGO_DATA_URI = `data:image/jpeg;base64,${buf.toString('base64')}`;
+} catch (e) {
+  console.warn('[HoSo] Không đọc được logo logo-dakpring.jpg:', e.message);
+}
 
 let ioctcTokenCache = { token: null, expiry: 0 };
 
@@ -22,13 +33,31 @@ async function getIoctcToken() {
 
 async function searchDossier(code) {
   const token = await getIoctcToken();
-  const res = await axios.get(`${CONFIG.IOCTC_BASE_URL}/tra-cuu`, {
-    headers: { Authorization: `Bearer ${token}`, 'Accept': 'application/json' },
-    params: { ma_ho_so: code.trim().toUpperCase() },
-    timeout: 15000,
-  });
-  console.log('[IOCTC] TongSo:', res.data?.TongSo);
-  return res.data;
+  const maHoSo = code.trim().toUpperCase();
+  // IOCTC thỉnh thoảng trả 500 (CAPTCHA/scrape lỗi tạm) → thử lại tối đa 3 lần
+  let lastErr;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await axios.get(`${CONFIG.IOCTC_BASE_URL}/tra-cuu`, {
+        headers: { Authorization: `Bearer ${token}`, 'Accept': 'application/json' },
+        params: { ma_ho_so: maHoSo },
+        timeout: 15000,
+      });
+      console.log('[IOCTC] TongSo:', res.data?.TongSo);
+      return res.data;
+    } catch (err) {
+      lastErr = err;
+      const status = err.response?.status;
+      // 500 (lỗi CAPTCHA chập chờn) hoặc không có response (timeout/mạng) → thử lại
+      if ((status === 500 || !err.response) && attempt < 3) {
+        console.warn(`[IOCTC] tra-cuu lỗi ${status || err.code} (lần ${attempt}), thử lại sau 1.5s...`);
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
 }
 
 function formatDate(dateField) {
@@ -96,7 +125,7 @@ function getDossierHtml(dossier) {
 body { font-family: Arial, sans-serif; background: white; width: 520px; }
 .card { width: 520px; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; }
 .header { background: #1565C0; padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
-.logo { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.logo { width: 44px; height: 44px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .header-title { color: white; font-size: 15px; font-weight: bold; }
 .header-sub { color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 3px; }
 table { width: 100%; border-collapse: collapse; }
@@ -104,14 +133,14 @@ tr { border-bottom: 1px solid #f0f0f0; }
 tr:last-child { border-bottom: none; }
 tr:nth-child(even) { background: #f9f9f9; }
 td { padding: 11px 18px; font-size: 13px; vertical-align: top; }
-.label { color: #888; width: 155px; white-space: nowrap; }
+.label { color: #555; width: 155px; white-space: nowrap; font-weight: bold; }
 .value { color: #222; }
 .bold { font-weight: bold; }
 .badge { display: inline-block; padding: 3px 12px; border-radius: 5px; font-size: 12px; color: white; font-weight: bold; background: ${badgeColor}; }
 </style></head>
 <body><div class="card">
   <div class="header">
-    <div class="logo">🏛️</div>
+    <div class="logo">${LOGO_DATA_URI ? `<img src="${LOGO_DATA_URI}" style="width:40px;height:40px;object-fit:contain;" />` : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'}</div>
     <div>
       <div class="header-title">UBND Đắk Pring</div>
       <div class="header-sub">Tra cứu hồ sơ hành chính</div>

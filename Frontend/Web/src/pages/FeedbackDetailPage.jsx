@@ -3,17 +3,21 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft, Send, UserCheck, Trash2, Loader2, CheckCircle2,
-  FileText, ThumbsUp, ThumbsDown, Clock,
+  FileText, ThumbsUp, ThumbsDown, Clock, MapPin,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
 import StatusBadge from '@/components/feedback/StatusBadge'
+import ImageGallery from '@/components/feedback/ImageGallery'
+import AttachmentComposer from '@/components/feedback/AttachmentComposer'
+import AttachmentViewer from '@/components/feedback/AttachmentViewer'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+
+const EMPTY_ATTACH = { note: '', images: [], video: { url: '', name: '' }, file: { url: '', name: '' } }
 
 export default function FeedbackDetailPage() {
   const { id } = useParams()
@@ -25,9 +29,14 @@ export default function FeedbackDetailPage() {
   const [note, setNote] = useState('')
   const [assignedTo, setAssignedTo] = useState('')
   const [rejectReason, setRejectReason] = useState('')
+  const [assignAttach, setAssignAttach] = useState(EMPTY_ATTACH)
+  const [draftAttach, setDraftAttach] = useState(EMPTY_ATTACH)
+  const [selfResponse, setSelfResponse] = useState('')
+  const [selfAttach, setSelfAttach] = useState(EMPTY_ATTACH)
 
   const isLeader = user?.role === 'superadmin' || user?.role === 'dept_leader'
   const isOfficer = user?.role === 'officer' || user?.role === 'staff'
+  const isSuperadmin = user?.role === 'superadmin'
 
   const { data, isLoading } = useQuery({
     queryKey: ['feedback', id],
@@ -56,14 +65,26 @@ export default function FeedbackDetailPage() {
   })
 
   const assignMutation = useMutation({
-    mutationFn: () => api.post(`/api/feedbacks/${id}/assign`, { assignedTo }).then((r) => r.data),
-    onSuccess: () => { toast.success('Đã cập nhật phân công'); invalidate() },
+    mutationFn: () => api.post(`/api/feedbacks/${id}/assign`, {
+      assignedTo,
+      note: assignAttach.note,
+      images: assignAttach.images,
+      video: assignAttach.video,
+      file: assignAttach.file,
+    }).then((r) => r.data),
+    onSuccess: () => { toast.success('Đã cập nhật phân công'); setAssignAttach(EMPTY_ATTACH); invalidate() },
     onError: (e) => toast.error(e.response?.data?.error || 'Lỗi phân công'),
   })
 
   const draftMutation = useMutation({
-    mutationFn: () => api.post(`/api/feedbacks/${id}/draft`, { draftResponse: draftText }).then((r) => r.data),
-    onSuccess: () => { toast.success('Đã gửi dự thảo, chờ lãnh đạo duyệt'); invalidate() },
+    mutationFn: () => api.post(`/api/feedbacks/${id}/draft`, {
+      draftResponse: draftText,
+      note: draftAttach.note,
+      images: draftAttach.images,
+      video: draftAttach.video,
+      file: draftAttach.file,
+    }).then((r) => r.data),
+    onSuccess: () => { toast.success('Đã gửi dự thảo, chờ lãnh đạo duyệt'); setDraftAttach(EMPTY_ATTACH); invalidate() },
     onError: (e) => toast.error(e.response?.data?.error || 'Lỗi gửi dự thảo'),
   })
 
@@ -71,6 +92,18 @@ export default function FeedbackDetailPage() {
     mutationFn: () => api.post(`/api/feedbacks/${id}/approve`, { finalResponse: draftText }).then((r) => r.data),
     onSuccess: () => { toast.success('Đã duyệt và gửi phản hồi cho dân qua Zalo'); invalidate() },
     onError: (e) => toast.error(e.response?.data?.error || 'Lỗi duyệt'),
+  })
+
+  const resolveMutation = useMutation({
+    mutationFn: () => api.post(`/api/feedbacks/${id}/resolve`, {
+      finalResponse: selfResponse,
+      note: selfAttach.note,
+      images: selfAttach.images,
+      video: selfAttach.video,
+      file: selfAttach.file,
+    }).then((r) => r.data),
+    onSuccess: () => { toast.success('Đã gửi phản hồi cho dân qua Zalo'); setSelfResponse(''); setSelfAttach(EMPTY_ATTACH); invalidate() },
+    onError: (e) => toast.error(e.response?.data?.error || 'Lỗi gửi phản hồi'),
   })
 
   const rejectMutation = useMutation({
@@ -101,6 +134,7 @@ export default function FeedbackDetailPage() {
   const shortCode = fb._id.slice(-5).toUpperCase()
   const isDraft = fb.status === 'draft'
   const isResolved = fb.status === 'resolved'
+  const imgs = fb.imageUrls?.length > 0 ? fb.imageUrls : fb.imageUrl ? [fb.imageUrl] : []
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -169,30 +203,38 @@ export default function FeedbackDetailPage() {
                 <div className="bg-gray-50 rounded-lg p-4 text-sm leading-relaxed whitespace-pre-wrap">{fb.content}</div>
               </div>
 
-              {(() => {
-                const imgs = fb.imageUrls?.length > 0 ? fb.imageUrls : fb.imageUrl ? [fb.imageUrl] : []
-                return imgs.length > 0 ? (
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                      Hình ảnh đính kèm ({imgs.length})
-                    </p>
-                    <div className={`grid gap-2 ${imgs.length === 1 ? 'grid-cols-1' : imgs.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                      {imgs.map((url, i) => (
-                        <a key={i} href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border bg-slate-50 hover:opacity-90 transition-opacity">
-                          <img
-                            src={url}
-                            alt={`Ảnh ${i + 1}`}
-                            className="w-full object-cover cursor-zoom-in"
-                            style={{ maxHeight: imgs.length === 1 ? '256px' : '160px' }}
-                          />
-                        </a>
-                      ))}
-                    </div>
+              {fb.location?.address && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Vị trí</p>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <MapPin className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                    <span>{fb.location.address}</span>
                   </div>
-                ) : null
-              })()}
+                </div>
+              )}
+
+              {imgs.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    Hình ảnh đính kèm ({imgs.length})
+                  </p>
+                  <ImageGallery images={imgs} />
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Tài liệu phân công từ lãnh đạo */}
+          {(fb.assignAttachments?.note || fb.assignAttachments?.images?.length || fb.assignAttachments?.video?.url || fb.assignAttachments?.file?.url) && (
+            <Card className="border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base text-blue-700">📋 Tài liệu từ lãnh đạo khi phân công</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AttachmentViewer data={fb.assignAttachments} />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Dự thảo đang chờ duyệt */}
           {fb.draftResponse && (
@@ -210,6 +252,12 @@ export default function FeedbackDetailPage() {
                   <p className="text-xs text-muted-foreground mt-2">
                     Soạn bởi {fb.draftBy?.fullName} · {fb.draftAt ? formatDate(fb.draftAt) : ''}
                   </p>
+                )}
+                {(fb.draftAttachments?.note || fb.draftAttachments?.images?.length || fb.draftAttachments?.video?.url || fb.draftAttachments?.file?.url) && (
+                  <div className="mt-3 border-t pt-3">
+                    <p className="text-xs font-semibold text-slate-500 mb-2">Tài liệu kèm dự thảo:</p>
+                    <AttachmentViewer data={fb.draftAttachments} />
+                  </div>
                 )}
                 {fb.rejectedReason && (
                   <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
@@ -271,6 +319,10 @@ export default function FeedbackDetailPage() {
                   value={draftText}
                   onChange={(e) => setDraftText(e.target.value)}
                 />
+                <div className="border-t pt-3">
+                  <p className="text-xs text-slate-500 mb-2">Đính kèm tài liệu (tuỳ chọn):</p>
+                  <AttachmentComposer value={draftAttach} onChange={setDraftAttach} disabled={draftMutation.isPending} />
+                </div>
                 <Button
                   className="w-full bg-sky-600 hover:bg-sky-700 text-white"
                   onClick={() => {
@@ -291,7 +343,7 @@ export default function FeedbackDetailPage() {
             </Card>
           )}
 
-          {/* LEADER: Duyệt / Từ chối — có thể sửa nội dung trước khi gửi */}
+          {/* LEADER: Duyệt / Từ chối */}
           {isLeader && isDraft && (
             <Card className="border-sky-200">
               <CardHeader className="pb-3">
@@ -313,7 +365,7 @@ export default function FeedbackDetailPage() {
                   )}
                 </div>
                 <Button
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={() => {
                     if (!draftText.trim()) { toast.error('Nội dung phản hồi không được để trống'); return }
                     if (window.confirm('Duyệt và gửi phản hồi này cho người dân qua Zalo?')) approveMutation.mutate()
@@ -347,12 +399,49 @@ export default function FeedbackDetailPage() {
             </Card>
           )}
 
+          {/* SUPERADMIN: Tự xử lý — gửi thẳng cho dân, không cần phân công */}
+          {isSuperadmin && !isResolved && (
+            <Card className="border-emerald-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2 text-emerald-700">
+                  <Send className="h-4 w-4" /> Tự xử lý — Phản hồi trực tiếp
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-xs text-slate-500">
+                  Soạn phản hồi và gửi thẳng cho người dân qua Zalo, không cần phân công cán bộ.
+                </p>
+                <Textarea
+                  rows={5}
+                  placeholder="Nhập nội dung phản hồi gửi người dân..."
+                  value={selfResponse}
+                  onChange={(e) => setSelfResponse(e.target.value)}
+                />
+                <div className="border-t pt-3">
+                  <p className="text-xs text-slate-500 mb-2">Đính kèm gửi kèm người dân (tuỳ chọn):</p>
+                  <AttachmentComposer value={selfAttach} onChange={setSelfAttach} disabled={resolveMutation.isPending} />
+                </div>
+                <Button
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => {
+                    if (!selfResponse.trim()) { toast.error('Vui lòng nhập nội dung phản hồi'); return }
+                    if (window.confirm('Gửi phản hồi này trực tiếp cho người dân qua Zalo?')) resolveMutation.mutate()
+                  }}
+                  disabled={resolveMutation.isPending}
+                >
+                  {resolveMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                  Gửi phản hồi cho dân
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* LEADER: Phân công */}
           {isLeader && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-sky-500" /> Phân công xử lý
+                  <UserCheck className="h-4 w-4 text-blue-500" /> Phân công xử lý
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -366,6 +455,10 @@ export default function FeedbackDetailPage() {
                     <option key={a._id} value={a._id}>{a.fullName} (@{a.username})</option>
                   ))}
                 </select>
+                <div className="border-t pt-3">
+                  <p className="text-xs text-slate-500 mb-2">Tài liệu giao việc (tuỳ chọn):</p>
+                  <AttachmentComposer value={assignAttach} onChange={setAssignAttach} disabled={assignMutation.isPending} />
+                </div>
                 <Button variant="secondary" className="w-full" onClick={() => assignMutation.mutate()} disabled={assignMutation.isPending}>
                   {assignMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Cập nhật phân công

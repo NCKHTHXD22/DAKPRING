@@ -1,29 +1,21 @@
 import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
-import { Search, Bell, Menu, X } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { Search, Menu, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import Sidebar from './Sidebar'
-
-const PAGE_TITLES = {
-  '/dashboard': { title: 'Tổng quan', subtitle: 'Thống kê & theo dõi góp ý người dân' },
-  '/feedbacks':  { title: 'Góp ý & Phản ánh', subtitle: 'Danh sách và xử lý phản ánh' },
-  '/users':      { title: 'Tài khoản Admin', subtitle: 'Quản lý tài khoản cán bộ' },
-}
-
-function getHourGreeting() {
-  const h = new Date().getHours()
-  if (h < 12) return 'Chào buổi sáng'
-  if (h < 18) return 'Chào buổi chiều'
-  return 'Chào buổi tối'
-}
+import NotificationBell from './NotificationBell'
 
 export default function AppLayout() {
   const { user } = useAuth()
-  const location = useLocation()
+  const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
 
-  const basePath = '/' + location.pathname.split('/')[1]
-  const page = PAGE_TITLES[basePath] ?? { title: 'Trang', subtitle: '' }
+  function handleSearch(e) {
+    e.preventDefault()
+    const q = searchValue.trim()
+    if (q) navigate(`/feedbacks?q=${encodeURIComponent(q)}`)
+  }
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -47,32 +39,23 @@ export default function AppLayout() {
           <div className="pointer-events-none absolute bottom-0 right-32 h-32 w-32 rounded-full bg-cyan-400/10" />
           <div className="pointer-events-none absolute -bottom-6 left-1/3 h-20 w-20 rounded-full bg-blue-300/10" />
 
-          <div className="relative px-6 py-4 flex items-center justify-between gap-4">
-            {/* Left: greeting + page title */}
-            <div className="min-w-0">
-              <h1 className="text-white font-bold text-lg leading-tight">
-                {getHourGreeting()}, <span className="text-blue-100">{user?.fullName?.split(' ').pop() ?? 'Admin'}</span>!
-              </h1>
-              <p className="text-blue-200/80 text-xs mt-0.5 truncate">{page.subtitle}</p>
-            </div>
-
+          <div className="relative px-6 py-4 flex items-center justify-end gap-4">
             {/* Right: search + notifications + user */}
             <div className="flex items-center gap-3 shrink-0">
               {/* Search (hidden on small screens) */}
-              <div className="relative hidden md:block">
+              <form onSubmit={handleSearch} className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/50 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Tìm kiếm..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   className="h-9 w-48 rounded-xl bg-white/15 border border-white/20 pl-9 pr-4 text-sm text-white placeholder-white/50 focus:outline-none focus:bg-white/22 focus:border-white/40 focus:w-56 transition-all duration-200"
                 />
-              </div>
+              </form>
 
-              {/* Bell */}
-              <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 border border-white/20 hover:bg-white/25 transition-all">
-                <Bell className="h-4 w-4 text-white" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-400 ring-1 ring-blue-600" />
-              </button>
+              {/* NotificationBell */}
+              <NotificationBell />
 
               {/* User chip */}
               <div className="flex items-center gap-2.5 rounded-xl bg-white/15 border border-white/20 px-3 py-1.5">

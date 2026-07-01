@@ -1,7 +1,8 @@
-﻿import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, MessageSquare, Users, LogOut, Settings, Building2, Send } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
+import { LayoutDashboard, MessageSquare, Users, LogOut, Settings, Send, FileBarChart2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
+import logoImg from '@/images/LogoDakPring.jpg'
 
 const ROLE_LABELS = {
   superadmin:  'Cán bộ quản trị',
@@ -52,8 +53,8 @@ export default function Sidebar() {
 
       {/* Brand */}
       <div className="relative flex items-center gap-3 px-5 py-5 border-b border-white/8">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg shadow-blue-800/40">
-          <Building2 className="h-5 w-5 text-white" />
+        <div className="h-11 w-11 shrink-0 rounded-full overflow-hidden shadow-lg shadow-blue-900/40 ring-2 ring-white/15">
+          <img src={logoImg} alt="Logo UBND Xã Đắk Pring" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0">
           <p className="text-white text-sm font-bold leading-tight truncate">UBND Xã Đắk Pring</p>
@@ -66,6 +67,21 @@ export default function Sidebar() {
         <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-white/25 select-none">
           Menu chính
         </p>
+        <div className="space-y-0.5">
+          <NavItem to="/dashboard" icon={LayoutDashboard} label="Tổng quan" />
+          <NavItem to="/feedbacks" icon={MessageSquare} label="Góp ý - Phản ánh" />
+        </div>
+        {/* Báo cáo — superadmin + dept_leader */}
+        {(user?.role === 'superadmin' || user?.role === 'dept_leader') && (
+          <>
+            <p className="px-3 pt-5 pb-2 text-[10px] font-bold uppercase tracking-widest text-white/25 select-none">
+              Báo cáo
+            </p>
+            <div className="space-y-0.5">
+              <NavItem to="/reports" icon={FileBarChart2} label="Thống kê - Báo cáo" />
+            </div>
+          </>
+        )}
         {/* Quản trị — chỉ superadmin */}
         {user?.role === 'superadmin' && (
           <>

@@ -1,10 +1,58 @@
-﻿import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { Building2, Eye, EyeOff, Loader2, Lock, User, ArrowLeft, KeyRound, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Lock, User, ArrowLeft, KeyRound, ShieldCheck, Earth, X, ExternalLink } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import logoImg from '@/images/LogoDakPring.jpg'
+
+const GlobeHero = lazy(() => import('@/components/login/GlobeHero'))
+
+// Link Google Earth chính thức của xã Đắk Pring — giữ nguyên toàn bộ URL, không rút gọn
+const GOOGLE_EARTH_URL =
+  'https://earth.google.com/web/search/%c4%90%e1%ba%afc+Pring,+%c4%90%c3%a0+N%e1%ba%b5ng/@15.52933989,107.61531369,802.89226008a,125577.44079145d,35y,0h,0t,0r/data=CogBGloSVAolMHgzMTZhNmJiZTNiMTBlOTdiOjB4YjQzNDA0MzY1NWUyMGVlYxlImokz0PYuQCGCupIux-daQCoZxJDhuq9jIFByaW5nLCDEkMOgIE7hurVuZxgCIAEiJgokCbaWGTk6vS9AEa8jNY4XEC9AGRw8N9a1HVtAIfjRTbpX7lpAQgIIATIpCicKJQohMVlWeDRfc3VQTEVDMWJ5REZfMllZejhSQ0xNRW9kVmlTIAE6AwoBMEICCABKCAjPto-wBBAB'
+
+function GoogleEarthModal({ onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-4xl h-[80vh] rounded-2xl overflow-hidden bg-slate-900 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between bg-slate-950/90 px-4 py-2.5">
+          <div className="flex items-center gap-2 text-sm text-white/90 font-semibold">
+            <Earth className="h-4 w-4 text-blue-400" /> Google Earth — Xã Đắk Pring
+          </div>
+          <div className="flex items-center gap-3">
+            <a
+              href={GOOGLE_EARTH_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" /> Mở trong tab mới
+            </a>
+            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+        {/* Google Earth thường chặn nhúng iframe (X-Frame-Options) — vì vậy luôn hiển thị
+            link "Mở trong tab mới" phía trên, không phụ thuộc vào việc iframe có tải được hay không. */}
+        <iframe
+          src={GOOGLE_EARTH_URL}
+          title="Google Earth - Xã Đắk Pring"
+          className="h-[calc(80vh-42px)] w-full border-0"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
+    </div>
+  )
+}
 
 // mode: 'login' | 'forgot' | 'reset'
 export default function LoginPage() {
@@ -13,6 +61,7 @@ export default function LoginPage() {
   const [showPwd, setShowPwd] = useState(false)
   const [showNewPwd, setShowNewPwd] = useState(false)
   const [mode, setMode] = useState('login')
+  const [showEarthModal, setShowEarthModal] = useState(false)
 
   const [loginForm, setLoginForm] = useState({ username: '', password: '' })
   const [forgotUsername, setForgotUsername] = useState('')
@@ -76,43 +125,46 @@ export default function LoginPage() {
     resetMutation.mutate()
   }
 
-  const decorativePanel = (
-    <div
-      className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-12 relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #0d1b2a 0%, #1a3a5c 50%, #0d2d4a 100%)' }}
-    >
-      <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-blue-600/10" />
-      <div className="absolute bottom-12 -right-12 h-48 w-48 rounded-full bg-cyan-500/8" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-blue-800/10" />
-      <div className="relative text-center">
-        <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-cyan-400 shadow-2xl shadow-blue-900/50 mb-6">
-          <Building2 className="h-10 w-10 text-white" />
-        </div>
-        <h1 className="text-white text-3xl font-extrabold mb-3 leading-tight">
-          UBND Xã<br />Đắk Pring
-        </h1>
-        <p className="text-blue-300/80 text-base leading-relaxed max-w-xs mx-auto">
-          Hệ thống gửi thông tin, cảnh báo<br />đến người dân, cán bộ, lãnh đạo
-        </p>
-      </div>
-    </div>
-  )
-
   return (
-    <div className="min-h-screen flex items-stretch">
-      {decorativePanel}
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-end"
+      style={{ background: '#050a1c' }}>
 
-      <div className="flex-1 flex items-center justify-center p-6 bg-slate-50">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="lg:hidden flex flex-col items-center mb-8">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg mb-3">
-              <Building2 className="h-7 w-7 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-800">UBND Xã Đắk Pring</h2>
+      {/* Globe background */}
+      <Suspense fallback={null}>
+        <GlobeHero />
+      </Suspense>
+
+      {/* Gradient overlay phía phải để form dễ đọc hơn */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[3]"
+        style={{ background: 'linear-gradient(to left, rgba(5,10,28,.80) 30%, transparent 75%)' }}
+      />
+
+      {/* Login form — floating right */}
+      <div className="relative z-[4] w-full max-w-sm mr-8 lg:mr-16 xl:mr-24 my-8">
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-6">
+          <div
+            className="h-16 w-16 rounded-full overflow-hidden mb-3 bg-[#0d1b2a]"
+            style={{
+              border: '2px solid rgba(37, 99, 235, 0.45)',
+              boxShadow: '0 6px 22px rgba(0, 0, 0, 0.55), 0 0 18px rgba(37, 99, 235, 0.25)',
+            }}
+          >
+            <img src={logoImg} alt="Logo UBND Xã Đắk Pring" className="h-full w-full object-cover" />
           </div>
+          <h2 className="text-white text-xl font-extrabold tracking-tight">UBND Xã Đắk Pring</h2>
+          <p className="text-blue-300/70 text-xs mt-1">Hệ thống quản lý góp ý - phản ánh</p>
+          <button
+            type="button"
+            onClick={() => setShowEarthModal(true)}
+            className="mt-2.5 flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-blue-100 hover:bg-white/20 transition-colors"
+          >
+            <Earth className="h-3.5 w-3.5" /> Xem trên Google Earth
+          </button>
+        </div>
 
-          <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-8">
 
             {/* ── BƯỚC 1: Đăng nhập ── */}
             {mode === 'login' && (
@@ -323,9 +375,10 @@ export default function LoginPage() {
                 </form>
               </>
             )}
-          </div>
         </div>
       </div>
+
+      {showEarthModal && <GoogleEarthModal onClose={() => setShowEarthModal(false)} />}
     </div>
   )
 }

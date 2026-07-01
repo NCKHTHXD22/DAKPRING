@@ -71,6 +71,7 @@ module.exports = {
         'sidebar': 'linear-gradient(180deg, #0d1b2a 0%, #0f2336 60%, #112840 100%)',
         'header':  'linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #0ea5e9 100%)',
         'hero-card': 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0ea5e9 100%)',
+        'login-panel': 'linear-gradient(160deg, #0d1b2a 0%, #1a3a5c 35%, #0d2d4a 60%, #0d1b2a 100%)',
       },
     },
   },

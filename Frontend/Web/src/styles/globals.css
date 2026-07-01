@@ -83,3 +83,33 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* Quick actions (Dashboard) */
+.quick-action {
+  @apply flex flex-col items-center gap-2.5 py-4 px-2 rounded-xl border border-border
+         hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 text-center cursor-pointer no-underline;
+}
+.quick-action-icon  { @apply w-10 h-10 rounded-xl flex items-center justify-center; }
+.quick-action-label { @apply text-xs font-semibold text-muted-foreground leading-tight; }
+
+/* Hero glow blobs */
+@keyframes heroGlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(-14px, 12px) scale(1.06); }
+}
+@keyframes heroGlow2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(18px, -10px) scale(1.08); }
+}
+
+/* Globe login page animations */
+@keyframes drift {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.97); }
+}
+.animate-drift { animation: drift 8s ease-in-out infinite; }
+.animate-pulse-hint { animation: pulseHint 2.5s ease-in-out infinite; }

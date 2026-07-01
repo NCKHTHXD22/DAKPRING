@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { X, MapPin, Loader2, Send } from 'lucide-react'
+import { X, MapPin, Loader2, Send, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -187,8 +187,8 @@ export default function FeedbackForm({ profile, accessToken, onSuccess }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contact">Số điện thoại / Email liên hệ</Label>
-              <Input id="contact" value={contact} onChange={e => setContact(e.target.value)} placeholder="0912345678" required />
+              <Label htmlFor="contact">Số điện thoại</Label>
+              <Input id="contact" value={contact} onChange={e => setContact(e.target.value)} placeholder="Vui lòng nhập số điện thoại" required />
             </div>
 
             <div className="space-y-2">
@@ -214,7 +214,8 @@ export default function FeedbackForm({ profile, accessToken, onSuccess }) {
                     }
                     {locationLoading ? 'Đang lấy vị trí...' : 'Lấy vị trí tự động'}
                   </Button>
-                  <Button type="button" variant="outline" className="flex-1" onClick={handleManualMode}>
+                  <Button type="button" variant="outline" className="flex-1 gap-2" onClick={handleManualMode}>
+                    <Pencil className="h-4 w-4" />
                     Nhập địa chỉ
                   </Button>
                 </div>

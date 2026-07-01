@@ -8,11 +8,15 @@ const categoryRoutes = require('./categories')
 const zaloMembersRoutes = require('./zalo-members')
 const broadcastRoutes = require('./broadcast')
 const catDienRoutes = require('./cat-dien')
+const publicRoutes = require('./public')
+const notificationRoutes = require('./notifications')
+const reportRoutes = require('./reports')
 
 router.use('/auth', authRoutes)
 
 // Công khai (không cần đăng nhập) — dữ liệu lịch cắt điện công cộng
 router.use('/cat-dien', catDienRoutes)
+router.use('/public', publicRoutes)
 
 router.use(requireAuth)
 router.use('/stats', statsRoutes)
@@ -21,5 +25,7 @@ router.use('/users', userRoutes)
 router.use('/categories', categoryRoutes)
 router.use('/zalo-members', zaloMembersRoutes)
 router.use('/broadcast', broadcastRoutes)
+router.use('/notifications', notificationRoutes)
+router.use('/reports', reportRoutes)
 
 module.exports = router

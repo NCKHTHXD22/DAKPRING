@@ -14,7 +14,7 @@ const FIELD_LABELS = {
   linhVuc: 'Lĩnh vực', loaiVanBan: 'Loại', coQuanBanHanh: 'Cơ quan',
 }
 
-const inputCls = 'w-full px-3.5 py-3 rounded-[13px] border-[1.5px] border-[#eae6f6] bg-[#f6f4fc] text-[#38334f] text-sm outline-none transition-colors focus:bg-white focus:border-[#8b5cf6] focus:shadow-[0_0_0_4px_rgba(139,92,246,0.18)] hover:border-[#c4b5fd]'
+const inputCls = 'w-full min-w-0 px-3.5 py-3 rounded-[13px] border-[1.5px] border-[#eae6f6] bg-[#f6f4fc] text-[#38334f] text-sm outline-none transition-colors focus:bg-white focus:border-[#8b5cf6] focus:shadow-[0_0_0_4px_rgba(139,92,246,0.18)] hover:border-[#c4b5fd]'
 
 function FieldLabel({ children, accent }) {
   return <label className={accent ? 'text-xs font-bold' : 'text-xs font-semibold text-[#6b6685]'} style={accent ? { color: ACCENT_TEXT } : undefined}>{children}</label>
@@ -31,16 +31,16 @@ function TextField({ label, value, onChange, placeholder }) {
 
 function DateRangeField({ title, fromValue, toValue, onFrom, onTo }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 min-w-0">
       <FieldLabel accent>{title}</FieldLabel>
-      <div className="grid grid-cols-2 gap-2.5">
-        <div className="flex flex-col gap-1">
+      <div className="grid grid-cols-2 gap-2.5 min-w-0">
+        <div className="flex flex-col gap-1 min-w-0">
           <span className="text-[11px] text-[#8b88a3]">Từ ngày</span>
-          <input type="date" value={fromValue} onChange={(e) => onFrom(e.target.value)} className={`${inputCls} py-2.5 text-[13px]`} />
+          <input type="date" value={fromValue} onChange={(e) => onFrom(e.target.value)} className={`${inputCls} py-2.5 text-[13px]`} style={{ colorScheme: 'light' }} />
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-0">
           <span className="text-[11px] text-[#8b88a3]">Đến ngày</span>
-          <input type="date" value={toValue} onChange={(e) => onTo(e.target.value)} className={`${inputCls} py-2.5 text-[13px]`} />
+          <input type="date" value={toValue} onChange={(e) => onTo(e.target.value)} className={`${inputCls} py-2.5 text-[13px]`} style={{ colorScheme: 'light' }} />
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@ export default function FilterPanel({ open, onToggle, filters, setFilters, filte
       </button>
 
       {open && (
-        <div className="px-[18px] pb-[18px] pt-0.5 flex flex-col gap-[15px]">
+        <div className="px-[18px] pb-[18px] pt-0.5 flex flex-col gap-[15px] min-w-0">
           <TextField label="Số văn bản" value={filters.soHieu} onChange={(v) => set('soHieu', v)} placeholder="VD: 49/2026/NQ-HĐND" />
           <TextField label="Trích yếu (từ khoá)" value={filters.trichYeu} onChange={(v) => set('trichYeu', v)} placeholder="VD: bảo hiểm y tế" />
 

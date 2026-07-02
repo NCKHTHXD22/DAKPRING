@@ -26,7 +26,7 @@ function parseVnDate(str) {
 async function fetchPage(pageNum) {
   const url = pageNum <= 1 ? BASE_URL : `${BASE_URL}?paged=${pageNum}`;
   const res = await axios.get(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (UBND-DakPring-VanBan/1.0)' },
+    headers: { 'User-Agent': 'Mozilla/5.0 (UBND-DacPring-VanBan/1.0)' },
     timeout: 20000,
   });
   const $ = cheerio.load(res.data);

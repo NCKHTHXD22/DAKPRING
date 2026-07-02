@@ -1,6 +1,6 @@
-# Zalo OA – UBND Đắk Pring
+# Zalo OA – UBND Đắc Pring
 
-Hệ thống quản trị Zalo Official Account cho UBND Đắk Pring: tiếp nhận góp ý/phản ánh của người dân qua Zalo, quản lý người theo dõi OA, gửi tin nhắn broadcast (tức thì + lên lịch), tra cứu lịch cắt điện EVNCPC/cắt nước Đà Nẵng, tra cứu hồ sơ hành chính (IOCTC), thông báo/nhắc hạn xử lý, thống kê/xuất báo cáo Excel.
+Hệ thống quản trị Zalo Official Account cho UBND Đắc Pring: tiếp nhận góp ý/phản ánh của người dân qua Zalo, quản lý người theo dõi OA, gửi tin nhắn broadcast (tức thì + lên lịch), tra cứu lịch cắt điện EVNCPC/cắt nước Đà Nẵng, tra cứu hồ sơ hành chính (IOCTC), thông báo/nhắc hạn xử lý, thống kê/xuất báo cáo Excel.
 
 ## Kiến trúc
 
@@ -30,9 +30,9 @@ Frontend (React/Vite, Vercel) ↔ Backend (Node/Express, VPS Bitzfly + PM2 + Ngi
 - Tra cứu lịch cắt điện EVNCPC, lịch cắt nước Đà Nẵng, tra cứu hồ sơ hành chính IOCTC.
 - Dashboard thống kê, trang Báo cáo (biểu đồ + xuất Excel), quản lý tài khoản quản trị viên.
 
-## Đặc thù kiến trúc riêng của Đắk Pring
+## Đặc thù kiến trúc riêng của Đắc Pring
 
-- **`Backend/src/config/redisKeys.js`**: Đắk Pring dùng chung 1 Upstash Redis instance với nhiều xã khác (Hoà Tiến, Việt An, Đại Lộc, An Hải...), nên mọi Redis key đều đi qua namespace prefix `DAKPRING_` định nghĩa tập trung tại đây — khi thêm key mới luôn phải khai báo ở file này trước, không hardcode literal.
+- **`Backend/src/config/redisKeys.js`**: Đắc Pring dùng chung 1 Upstash Redis instance với nhiều xã khác (Hoà Tiến, Việt An, Đại Lộc, An Hải...), nên mọi Redis key đều đi qua namespace prefix `DAKPRING_` định nghĩa tập trung tại đây — khi thêm key mới luôn phải khai báo ở file này trước, không hardcode literal.
 - **PKCE OAuth** (`/oauth-start` + `/oauth`): luồng cấp quyền Zalo hiện đại hơn (dùng code_verifier lưu tạm trong Redis), thay cho OAuth cũ đơn giản.
 
 ## Chạy local

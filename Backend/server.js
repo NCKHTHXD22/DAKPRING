@@ -277,12 +277,12 @@ app.get('/oauth', async (req, res) => {
 
 // ── Zalo token thủ công (không cần auth, đặt TRƯỚC admin router) ──
 app.get('/admin/set-tokens', (_req, res) => {
-  res.send(`<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Set Zalo Tokens - Đắk Pring</title>
+  res.send(`<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Set Zalo Tokens - Đắc Pring</title>
   <style>body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px}
   textarea{width:100%;padding:8px;margin:8px 0;box-sizing:border-box;height:80px;font-size:12px}
   button{background:#0068ff;color:white;padding:10px 24px;border:none;cursor:pointer;border-radius:4px;font-size:16px}
   label{font-weight:bold}</style></head>
-  <body><h2>Cập nhật Zalo Token - UBND Đắk Pring</h2>
+  <body><h2>Cập nhật Zalo Token - UBND Đắc Pring</h2>
   <form method="POST" action="/admin/set-tokens">
     <label>Access Token:</label>
     <textarea name="access_token" placeholder="Dán access_token vào đây" required></textarea>
@@ -379,11 +379,11 @@ app.get('/', async (req, res) => {
       return res.type('html').send(`<h2>❌ Lỗi: ${err.message}</h2>`);
     }
   }
-  res.type('html').send(`<!DOCTYPE html><html><head><meta name="zalo-platform-site-verification" content="OFpW5E3FJ1Xguy4-eUrB0sVec1wBdar8EJ4r" /><meta name="zalo-platform-site-verification" content="V--V2FNo738yvPTapTG4GplufKxNZd0PCJ8q" /></head><body>UBND phuong Dak Pring - OA Zalo</body></html>`);
+  res.type('html').send(`<!DOCTYPE html><html><head><meta name="zalo-platform-site-verification" content="OFpW5E3FJ1Xguy4-eUrB0sVec1wBdar8EJ4r" /><meta name="zalo-platform-site-verification" content="V--V2FNo738yvPTapTG4GplufKxNZd0PCJ8q" /></head><body>UBND xa Dac Pring - OA Zalo</body></html>`);
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', project: 'UBND Đắk Pring - Góp ý', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', project: 'UBND Đắc Pring - Góp ý', timestamp: new Date().toISOString() });
 });
 
 // ── Serve file upload tạm (video broadcast) tại /images ──
@@ -399,7 +399,7 @@ if (require('fs').existsSync(webDist)) {
 }
 
 app.listen(CONFIG.PORT, () => {
-  console.log(`\n🚀 Server Đắk Pring Góp ý chạy tại http://localhost:${CONFIG.PORT}`);
+  console.log(`\n🚀 Server Đắc Pring Góp ý chạy tại http://localhost:${CONFIG.PORT}`);
   console.log(`📡 Webhook URL: http://localhost:${CONFIG.PORT}/webhook`);
   console.log(`🖥️  Admin Dashboard: http://localhost:${CONFIG.PORT}/admin\n`);
 });

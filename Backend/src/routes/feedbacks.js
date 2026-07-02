@@ -347,7 +347,7 @@ router.post('/:id/approve', requireRole('superadmin', 'dept_leader'), async (req
       `${'─'.repeat(32)}\n` +
       `${finalResponse}\n` +
       `${'─'.repeat(32)}\n` +
-      `Cảm ơn bạn đã tin tưởng UBND Đắk Pring!`
+      `Cảm ơn bạn đã tin tưởng UBND Đắc Pring!`
     await sendZaloText(feedback.userId, citizenMsg)
 
     await Feedback.findByIdAndUpdate(req.params.id, {
@@ -471,7 +471,7 @@ router.post('/:id/resolve', requireRole('superadmin'), async (req, res) => {
       `${'─'.repeat(32)}\n` +
       `${text}\n` +
       `${'─'.repeat(32)}\n` +
-      `Cảm ơn bạn đã tin tưởng UBND Đắk Pring!`
+      `Cảm ơn bạn đã tin tưởng UBND Đắc Pring!`
     await sendZaloText(feedback.userId, citizenMsg)
 
     const attach = {

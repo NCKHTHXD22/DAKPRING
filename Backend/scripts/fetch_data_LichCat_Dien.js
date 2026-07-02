@@ -1,7 +1,7 @@
 ﻿/**
  * fetch_data_LichCat_Dien.js
  * Cào lịch tạm ngừng cung cấp điện từ EVNCPC (cskh.cpc.vn) — TOÀN BỘ Điện lực Đà Nẵng,
- * sau đó tách/lọc theo từng đơn vị (vd Điện lực Đắk Pring = PC05MM).
+ * sau đó tách/lọc theo từng đơn vị (vd Điện lực Nam Giang, phụ trách Đắc Pring = PC05PP).
  *
  * Nguồn (reverse-engineer từ SPA cskh.cpc.vn) — KHÔNG cần CAPTCHA:
  *   - Danh sách đơn vị con: GET /api/remote/organizations?maDonViCapTren=PP   (header version:1.0)
@@ -10,7 +10,7 @@
  *
  * Chạy thử:
  *   node scripts/fetch_data_LichCat_Dien.js                 → tổng hợp tất cả đơn vị
- *   node scripts/fetch_data_LichCat_Dien.js "Đắk Pring"       → lọc theo đơn vị/trạm
+ *   node scripts/fetch_data_LichCat_Dien.js "Nam Giang"       → lọc theo đơn vị/trạm
  *   node scripts/fetch_data_LichCat_Dien.js 12/06            → lọc theo ngày
  */
 

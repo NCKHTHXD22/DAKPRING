@@ -1,7 +1,7 @@
 {
   "name": "zalo-oa-DAKPRING-goopy",
   "version": "1.0.0",
-  "description": "Zalo OA webhook - Tiếp nhận góp ý, phản ánh - UBND Đắk Pring",
+  "description": "Zalo OA webhook - Tiếp nhận góp ý, phản ánh - UBND Đắc Pring",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

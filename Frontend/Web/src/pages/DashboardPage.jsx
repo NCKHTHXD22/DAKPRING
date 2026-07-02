@@ -121,7 +121,7 @@ export default function DashboardPage() {
             Tổng quan hệ thống
           </h1>
           <p className="text-sm text-slate-400 mt-1.5 flex items-center gap-1.5">
-            <MapPin size={14} /> UBND Xã Đắk Pring
+            <MapPin size={14} /> UBND Xã Đắc Pring
           </p>
         </div>
         <button
@@ -162,7 +162,7 @@ export default function DashboardPage() {
               </span>
               <span className="text-lg font-semibold text-slate-500">góp ý</span>
             </div>
-            <p className="text-sm text-slate-400 mt-3">Cập nhật mới nhất — UBND Xã Đắk Pring</p>
+            <p className="text-sm text-slate-400 mt-3">Cập nhật mới nhất — UBND Xã Đắc Pring</p>
           </div>
 
           <div className="flex gap-3.5 flex-wrap">

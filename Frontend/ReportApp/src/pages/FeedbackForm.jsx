@@ -51,7 +51,7 @@ async function reverseGeocode(lat, lng) {
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=vi`,
-      { headers: { 'User-Agent': 'UBND-DakPring-GoiY/1.0' } }
+      { headers: { 'User-Agent': 'UBND-DacPring-GoiY/1.0' } }
     )
     const data = await res.json()
     return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`
@@ -164,7 +164,7 @@ export default function FeedbackForm({ profile, accessToken, onSuccess }) {
       <Card className="mx-auto max-w-md animate-fade-in">
         <CardHeader>
           <div className="flex items-center gap-2.5">
-            <img src="/LogoDakPring.jpg" alt="Đắk Pring" className="h-9 w-9 shrink-0 rounded-md object-contain" />
+            <img src="/LogoDakPring.jpg" alt="Đắc Pring" className="h-9 w-9 shrink-0 rounded-md object-contain" />
             <CardTitle className="text-lg font-bold text-foreground">Gửi góp ý - Phản ánh</CardTitle>
           </div>
           <div className="flex items-center gap-2 pt-1">

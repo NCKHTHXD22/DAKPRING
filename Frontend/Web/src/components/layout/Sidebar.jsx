@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, MessageSquare, Users, LogOut, Settings, Send, FileBarChart2 } from 'lucide-react'
+import { LayoutDashboard, MessageSquare, Users, LogOut, Settings, Send, FileBarChart2, Wallet } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import logoImg from '@/images/LogoDakPring.jpg'
@@ -54,10 +54,10 @@ export default function Sidebar() {
       {/* Brand */}
       <div className="relative flex items-center gap-3 px-5 py-5 border-b border-white/8">
         <div className="h-11 w-11 shrink-0 rounded-full overflow-hidden shadow-lg shadow-blue-900/40 ring-2 ring-white/15">
-          <img src={logoImg} alt="Logo UBND Xã Đắk Pring" className="h-full w-full object-cover" />
+          <img src={logoImg} alt="Logo UBND Xã Đắc Pring" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0">
-          <p className="text-white text-sm font-bold leading-tight truncate">UBND Xã Đắk Pring</p>
+          <p className="text-white text-sm font-bold leading-tight truncate">UBND Xã Đắc Pring</p>
           <p className="text-blue-400/70 text-[11px] mt-0.5">Hệ thống tiếp nhận Phản ánh góp ý và Gửi thông tin thông báo, cảnh báo đến người dân</p>
         </div>
       </div>
@@ -70,6 +70,7 @@ export default function Sidebar() {
         <div className="space-y-0.5">
           <NavItem to="/dashboard" icon={LayoutDashboard} label="Tổng quan" />
           <NavItem to="/feedbacks" icon={MessageSquare} label="Góp ý - Phản ánh" />
+          <NavItem to="/tro-cap" icon={Wallet} label="Lịch chi trả trợ cấp" />
         </div>
         {/* Báo cáo — superadmin + dept_leader */}
         {(user?.role === 'superadmin' || user?.role === 'dept_leader') && (

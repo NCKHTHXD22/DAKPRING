@@ -223,7 +223,7 @@ router.get('/export', async (req, res) => {
     const now = new Date()
 
     const wb = new ExcelJS.Workbook()
-    wb.creator = 'UBND Đắk Pring'
+    wb.creator = 'UBND Đắc Pring'
     wb.created = new Date()
 
     const s1 = wb.addWorksheet('Tổng hợp')

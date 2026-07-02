@@ -3,7 +3,7 @@ const { getOutages, syncOutages, listStations, getOutagesByStations } = require(
 
 // GET /api/cat-dien?q=12/06&donVi=PC05PP
 //   q     : "" | "tất cả" | "dd/MM" | tên trạm
-//   donVi : mã đơn vị điện lực (mặc định Nam Giang, phụ trách Đắk Pring); 'all' = toàn TP Đà Nẵng
+//   donVi : mã đơn vị điện lực (mặc định Nam Giang, phụ trách Đắc Pring); 'all' = toàn TP Đà Nẵng
 router.get('/', async (req, res) => {
   try {
     const { q = '', donVi } = req.query;

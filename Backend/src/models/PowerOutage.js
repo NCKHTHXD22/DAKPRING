@@ -1,9 +1,9 @@
 ﻿const mongoose = require('mongoose');
 
-// Lịch tạm ngừng cung cấp điện (EVNCPC) — khu vực Điện lực Đắk Pring
+// Lịch tạm ngừng cung cấp điện (EVNCPC) — khu vực Điện lực Đắc Pring
 const powerOutageSchema = new mongoose.Schema({
-  subOrgCode:   { type: String, default: '' },   // mã đơn vị điện lực (vd PC05MM)
-  subOrgName:   { type: String, default: '' },   // tên đơn vị (vd "Điện lực Đắk Pring")
+  subOrgCode:   { type: String, default: '' },   // mã đơn vị điện lực (vd PC05PP)
+  subOrgName:   { type: String, default: '' },   // tên đơn vị (vd "Điện lực Đắc Pring")
   stationCode:  { type: String, default: '' },   // mã trạm
   stationName:  { type: String, default: '' },   // tên trạm / khu vực
   fromDate:     { type: Date, required: true },  // bắt đầu cắt

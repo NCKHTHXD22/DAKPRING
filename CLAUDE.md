@@ -66,7 +66,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-## Project-specific: Zalo OA – UBND Đắk Pring
+## Project-specific: Zalo OA – UBND Đắc Pring
 
 - `Backend/` — Express API + webhook Zalo OA. Entry point: `Backend/server.js`. Code chính ở `Backend/src/` (`routes/`, `services/`, `models/`, `middleware/`, `admin/` — dashboard EJS riêng tại `/admin`, song song với REST API tại `/api` mà Frontend gọi).
 - `Frontend/Web/` — SPA React (Vite + Tailwind), deploy Vercel, gọi Backend qua `VITE_API_URL`.
@@ -84,7 +84,7 @@ cd Frontend/Web && npm run dev   # Vite dev server
 
 - **Không chạy `node server.js` ở Backend/ một cách tuỳ tiện để "test"** — `.env` hiện tại trỏ vào MongoDB Atlas/Upstash Redis/Zalo OA token **thật** (production), và `schedulerService`/`catDienService`/`deadlineReminderService`/`groupSyncService` tự khởi động cron khi server start.
 - **Tuyệt đối không `require()` `src/utils/zaloApi.js` hoặc `src/utils/zaloToken.js`** (kể cả để "kiểm tra cú pháp bằng node -e") — `zaloToken.js` có một IIFE tự chạy `refreshAccessToken()` thật ngay khi module được load, ghi đè token vào Redis production. Chỉ dùng `node --check <file>` (parse-only) để verify code sau khi sửa; không bao giờ `require()` các module này hay `server.js` để test.
-- **`Backend/src/config/redisKeys.js`**: Đắk Pring dùng chung 1 Upstash Redis instance với nhiều xã khác — mọi Redis key phải đi qua namespace prefix `DAKPRING_` định nghĩa tập trung ở đây, không hardcode literal key.
+- **`Backend/src/config/redisKeys.js`**: Đắc Pring dùng chung 1 Upstash Redis instance với nhiều xã khác — mọi Redis key phải đi qua namespace prefix `DAKPRING_` định nghĩa tập trung ở đây, không hardcode literal key.
 - **PKCE OAuth** (`/oauth-start` + `/oauth` trong `server.js`): luồng cấp quyền Zalo hiện đại (code_verifier lưu tạm trong Redis) — không hạ cấp về OAuth cũ đơn giản khi tham khảo các repo xã khác.
 - **Upload runtime** (`Backend/public/images/`) là thư mục lưu ảnh/video người dùng gửi qua broadcast — bị gitignore, không phải static asset của frontend.
 - **`.env` nằm ở `Backend/.env`**, không phải ở root. `dotenv.config()` load theo `process.cwd()`, nên luôn chạy backend với cwd = `Backend/` (npm script, hoặc `pm2 start ... --cwd .../Backend`).

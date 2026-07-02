@@ -9,15 +9,18 @@ const zaloMembersRoutes = require('./zalo-members')
 const broadcastRoutes = require('./broadcast')
 const catDienRoutes = require('./cat-dien')
 const vanBanHanhChinhRoutes = require('./van-ban-hanh-chinh')
+const troCapPublicRoutes = require('./tro-cap-public')
+const troCapRoutes = require('./tro-cap')
 const publicRoutes = require('./public')
 const notificationRoutes = require('./notifications')
 const reportRoutes = require('./reports')
 
 router.use('/auth', authRoutes)
 
-// Công khai (không cần đăng nhập) — dữ liệu lịch cắt điện, văn bản hành chính công cộng
+// Công khai (không cần đăng nhập) — dữ liệu lịch cắt điện, văn bản hành chính, chi trả trợ cấp công cộng
 router.use('/cat-dien', catDienRoutes)
 router.use('/van-ban-hanh-chinh', vanBanHanhChinhRoutes)
+router.use('/tro-cap-public', troCapPublicRoutes)
 router.use('/public', publicRoutes)
 
 router.use(requireAuth)
@@ -25,6 +28,7 @@ router.use('/stats', statsRoutes)
 router.use('/feedbacks', feedbackRoutes)
 router.use('/users', userRoutes)
 router.use('/categories', categoryRoutes)
+router.use('/tro-cap', troCapRoutes)
 router.use('/zalo-members', zaloMembersRoutes)
 router.use('/broadcast', broadcastRoutes)
 router.use('/notifications', notificationRoutes)

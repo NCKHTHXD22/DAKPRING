@@ -88,7 +88,7 @@ async function fetchAllOutages() {
 
 // ─── Cào + lưu vào Mongo (upsert chống trùng) ───
 async function syncOutages() {
-  // Chỉ cào ĐÚNG đơn vị của OA này (Nam Giang, phụ trách Đắk Pring) — 1 request/lần.
+  // Chỉ cào ĐÚNG đơn vị của OA này (Nam Giang, phụ trách Đắc Pring) — 1 request/lần.
   // Cào cả 18 đơn vị bị EVNCPC rate-limit (429) từ IP VPS → các đơn vị cuối (Nam Giang) bị bỏ qua.
   const code = CONFIG.EVNCPC_SUBORG_CODE;
   let items;
@@ -116,7 +116,7 @@ async function syncOutages() {
 }
 
 // ─── Truy vấn từ Mongo: tách theo đơn vị (subOrgCode) + lọc trạm/ngày ───
-// subOrgCode mặc định = đơn vị của OA này (Đắk Pring). Truyền '' hoặc 'all' để xem toàn TP.
+// subOrgCode mặc định = đơn vị của OA này (Đắc Pring). Truyền '' hoặc 'all' để xem toàn TP.
 async function getOutages(query = '', subOrgCode = CONFIG.EVNCPC_SUBORG_CODE) {
   const q = (query || '').toLowerCase().trim().normalize('NFC');
   const now = new Date();
@@ -239,7 +239,7 @@ body { font-family: Arial, sans-serif; background:#fff; width:520px; }
   <div class="header">
     <div class="logo">⚡</div>
     <div>
-      <div class="htitle">Lịch tạm ngừng cấp điện — Đắk Pring</div>
+      <div class="htitle">Lịch tạm ngừng cấp điện — Đắc Pring</div>
       <div class="hsub">${query ? `Tra cứu: ${escapeHtml(query)} · ` : ''}Nguồn: EVNCPC</div>
     </div>
   </div>
@@ -261,7 +261,7 @@ function formatText(items, query = '') {
   if (items.length > TEXT_MAX_ITEMS) {
     lines.push(`... và ${items.length - TEXT_MAX_ITEMS} khu vực khác. Nhắn tên trạm để xem cụ thể.`);
   }
-  return `⚡ LỊCH TẠM NGỪNG CẤP ĐIỆN — Đắk Pring\n━━━━━━━━━━━━━━━━━━━\n${lines.join('\n\n')}\n━━━━━━━━━━━━━━━━━━━\n📍 Nguồn: EVNCPC`;
+  return `⚡ LỊCH TẠM NGỪNG CẤP ĐIỆN — Đắc Pring\n━━━━━━━━━━━━━━━━━━━\n${lines.join('\n\n')}\n━━━━━━━━━━━━━━━━━━━\n📍 Nguồn: EVNCPC`;
 }
 
 // Tra cứu + gửi card ảnh (fallback text nếu render lỗi). Trả về số mục tìm được.

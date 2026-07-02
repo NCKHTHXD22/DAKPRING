@@ -83,9 +83,9 @@ export default function GlobeHero() {
       { maxZoom: 19, opacity: 0.85 }
     ).addTo(map)
 
-    // Chấm đánh dấu trung tâm Đắk Pring (chưa có ranh giới hành chính chính thức dạng GeoJSON)
+    // Chấm đánh dấu trung tâm Đắc Pring (chưa có ranh giới hành chính chính thức dạng GeoJSON)
     L.marker(MAP_CENTER, { icon: createDotIcon('#1d4ed8') })
-      .bindPopup('<div style="font-family:sans-serif;font-size:13px;font-weight:700;color:#1d4ed8">Xã Đắk Pring</div>', { maxWidth: 200 })
+      .bindPopup('<div style="font-family:sans-serif;font-size:13px;font-weight:700;color:#1d4ed8">Xã Đắc Pring</div>', { maxWidth: 200 })
       .addTo(map)
 
     // Markers hồ sơ chưa xử lý
@@ -222,7 +222,7 @@ export default function GlobeHero() {
           <div style={{ fontWeight: 700, color: '#1d4ed8', fontSize: 13 }}>
             🗺️ Bản đồ phản ánh
           </div>
-          <div style={{ color: '#374151' }}>Xã Đắk Pring</div>
+          <div style={{ color: '#374151' }}>Xã Đắc Pring</div>
           <div style={{ color: markerCount ? '#f59e0b' : '#6b7280', fontWeight: 600, marginTop: 2 }}>
             {markerCount > 0
               ? `${markerCount} hồ sơ đang chờ xử lý`
@@ -247,7 +247,7 @@ export default function GlobeHero() {
         }}
       >
         <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#f4c245', boxShadow: '0 0 0 4px rgba(244,194,69,.25)' }} />
-        Kéo để xoay • cuộn để phóng to • nhấp vào địa cầu để bay tới Đắk Pring
+        Kéo để xoay • cuộn để phóng to • nhấp vào địa cầu để bay tới Đắc Pring
       </div>
 
       <button

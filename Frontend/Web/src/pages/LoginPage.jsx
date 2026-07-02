@@ -9,7 +9,7 @@ import logoImg from '@/images/LogoDakPring.jpg'
 
 const GlobeHero = lazy(() => import('@/components/login/GlobeHero'))
 
-// Link Google Earth chính thức của xã Đắk Pring — giữ nguyên toàn bộ URL, không rút gọn
+// Link Google Earth chính thức của xã Đắc Pring — giữ nguyên toàn bộ URL, không rút gọn
 const GOOGLE_EARTH_URL =
   'https://earth.google.com/web/search/%c4%90%e1%ba%afc+Pring,+%c4%90%c3%a0+N%e1%ba%b5ng/@15.52933989,107.61531369,802.89226008a,125577.44079145d,35y,0h,0t,0r/data=CogBGloSVAolMHgzMTZhNmJiZTNiMTBlOTdiOjB4YjQzNDA0MzY1NWUyMGVlYxlImokz0PYuQCGCupIux-daQCoZxJDhuq9jIFByaW5nLCDEkMOgIE7hurVuZxgCIAEiJgokCbaWGTk6vS9AEa8jNY4XEC9AGRw8N9a1HVtAIfjRTbpX7lpAQgIIATIpCicKJQohMVlWeDRfc3VQTEVDMWJ5REZfMllZejhSQ0xNRW9kVmlTIAE6AwoBMEICCABKCAjPto-wBBAB'
 
@@ -25,7 +25,7 @@ function GoogleEarthModal({ onClose }) {
       >
         <div className="flex items-center justify-between bg-slate-950/90 px-4 py-2.5">
           <div className="flex items-center gap-2 text-sm text-white/90 font-semibold">
-            <Earth className="h-4 w-4 text-blue-400" /> Google Earth — Xã Đắk Pring
+            <Earth className="h-4 w-4 text-blue-400" /> Google Earth — Xã Đắc Pring
           </div>
           <div className="flex items-center gap-3">
             <a
@@ -45,7 +45,7 @@ function GoogleEarthModal({ onClose }) {
             link "Mở trong tab mới" phía trên, không phụ thuộc vào việc iframe có tải được hay không. */}
         <iframe
           src={GOOGLE_EARTH_URL}
-          title="Google Earth - Xã Đắk Pring"
+          title="Google Earth - Xã Đắc Pring"
           className="h-[calc(80vh-42px)] w-full border-0"
           referrerPolicy="no-referrer-when-downgrade"
         />
@@ -151,9 +151,9 @@ export default function LoginPage() {
               boxShadow: '0 6px 22px rgba(0, 0, 0, 0.55), 0 0 18px rgba(37, 99, 235, 0.25)',
             }}
           >
-            <img src={logoImg} alt="Logo UBND Xã Đắk Pring" className="h-full w-full object-cover" />
+            <img src={logoImg} alt="Logo UBND Xã Đắc Pring" className="h-full w-full object-cover" />
           </div>
-          <h2 className="text-white text-xl font-extrabold tracking-tight">UBND Xã Đắk Pring</h2>
+          <h2 className="text-white text-xl font-extrabold tracking-tight">UBND Xã Đắc Pring</h2>
           <p className="text-blue-300/70 text-xs mt-1">Hệ thống quản lý góp ý - phản ánh</p>
           <button
             type="button"
@@ -171,7 +171,7 @@ export default function LoginPage() {
               <>
                 <div className="mb-7">
                   <h2 className="text-2xl font-extrabold text-slate-800">Đăng nhập</h2>
-                  <p className="text-slate-400 text-sm mt-1">Dành cho cán bộ UBND Xã Đắk Pring</p>
+                  <p className="text-slate-400 text-sm mt-1">Dành cho cán bộ UBND Xã Đắc Pring</p>
                 </div>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-1.5">
@@ -229,7 +229,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <p className="text-center text-[11px] text-slate-300 mt-4">
-                  Khu vực dành riêng cho cán bộ UBND Xã Đắk Pring &bull; Liên hệ quản trị để được hỗ trợ
+                  Khu vực dành riêng cho cán bộ UBND Xã Đắc Pring &bull; Liên hệ quản trị để được hỗ trợ
                 </p>
               </>
             )}

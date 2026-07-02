@@ -52,7 +52,7 @@ export default function SuccessScreen({ info = {}, onReset }) {
         {/* Lời cảm ơn */}
         <div className="rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3 text-center">
           <p className="text-sm text-blue-700 font-medium">
-            🙏 Cảm ơn bạn đã tin tưởng gởi phản ánh tới UBND Đắk Pring!
+            🙏 Cảm ơn bạn đã tin tưởng gởi phản ánh tới UBND Đắc Pring!
           </p>
         </div>
 

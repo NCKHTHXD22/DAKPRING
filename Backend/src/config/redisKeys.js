@@ -1,7 +1,9 @@
 /**
- * Redis key namespace cho OA Đắk Pring.
- * Mỗi địa phương (Đắk Pring, Phước Thành, An Hải, Quế Sơn...) có prefix riêng
+ * Redis key namespace cho OA Đắc Pring.
+ * Mỗi địa phương (Đắc Pring, Phước Thành, An Hải, Quế Sơn...) có prefix riêng
  * để tránh xung đột key trên cùng một Upstash Redis instance.
+ * (Giữ nguyên literal 'DAKPRING' — đây là prefix Redis thật đang chạy production,
+ * đổi sẽ làm mất kết nối tới token/dữ liệu cũ đã lưu.)
  */
 const NS = 'DAKPRING';
 

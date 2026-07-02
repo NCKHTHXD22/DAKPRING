@@ -5,14 +5,14 @@ const Category = require('../models/Category');
 const CONFIG = require('../config');
 const { setState, getState, clearState } = require('./chatState');
 
-// Viewbox xã Đắk Pring, Đà Nẵng (lng_min,lat_min,lng_max,lat_max)
+// Viewbox xã Đắc Pring, Đà Nẵng (lng_min,lat_min,lng_max,lat_max)
 const DAK_PRING_VIEWBOX = '107.4,15.33,107.85,15.73';
 const DA_NANG_VIEWBOX = '107.0,15.0,108.4,16.3';
 
 async function geocodeAddress(address) {
   const axios = require('axios');
-  const headers = { 'User-Agent': 'UBND-DakPring-GopY/1.0' };
-  const query = `${address}, Đắk Pring, Đà Nẵng, Việt Nam`;
+  const headers = { 'User-Agent': 'UBND-DacPring-GopY/1.0' };
+  const query = `${address}, Đắc Pring, Đà Nẵng, Việt Nam`;
   const search = (viewbox) => axios.get('https://nominatim.openstreetmap.org/search', {
     params: { q: query, format: 'json', limit: 1, countrycodes: 'vn', viewbox, bounded: 1 },
     headers,
@@ -42,7 +42,7 @@ async function sendLocationPrompt(userId) {
   } else {
     await sendZaloText(userId,
       '📍 Vui lòng cung cấp địa chỉ / vị trí phản ánh:\n\n' +
-      '• Gõ địa chỉ cụ thể (VD: Thôn 1, xã Đắk Pring)\n' +
+      '• Gõ địa chỉ cụ thể (VD: Thôn 1, xã Đắc Pring)\n' +
       '• Hoặc chia sẻ vị trí GPS từ điện thoại bằng nút đính kèm 📎\n\n' +
       '1️⃣ Bỏ qua — không cung cấp địa chỉ\n\n' +
       '(Nhắn "huỷ" để thoát)'
@@ -79,7 +79,7 @@ async function startFeedback(userId, displayName = '') {
   }
   setState(userId, { step: 'waiting_contact', displayName: name });
   await sendZaloText(userId,
-    '💬 Chào mừng bạn đến với tính năng Góp ý - Phản ánh của UBND Đắk Pring!\n\n' +
+    '💬 Chào mừng bạn đến với tính năng Góp ý - Phản ánh của UBND Đắc Pring!\n\n' +
     '📞 Vui lòng nhập SĐT (09xxxxxxxx) hoặc email của bạn để chúng tôi có thể liên hệ lại:\n\n' +
     '(Nhắn "huỷ" để thoát bất cứ lúc nào)'
   );
@@ -405,7 +405,7 @@ async function saveFeedback(userId, state) {
     await sendZaloText(userId,
       '✅ Đã tiếp nhận phản ánh!\n\n' +
       `Mã phản ánh: #${shortCode}\n` +
-      'UBND Đắk Pring sẽ xử lý\n' +
+      'UBND Đắc Pring sẽ xử lý\n' +
       'trong 2-3 ngày làm việc kể từ\n' +
       'ngày tiếp nhận. Cảm ơn bạn!'
     );
@@ -507,7 +507,7 @@ async function createFeedbackEntry({ userId, displayName, contact, content, cate
       `${imgLine}` +
       `${'─'.repeat(28)}\n` +
       `🙏 Cảm ơn bạn đã tin tưởng gởi\n` +
-      `phản ánh tới UBND Đắk Pring!`
+      `phản ánh tới UBND Đắc Pring!`
     );
   } catch (err) {
     console.warn('[Feedback] Không gửi được tin xác nhận Zalo:', err.message);

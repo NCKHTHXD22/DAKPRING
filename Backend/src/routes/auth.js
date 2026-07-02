@@ -51,7 +51,7 @@ router.post('/forgot-password', async (req, res) => {
 
     await sendZaloText(
       user.zaloUserId,
-      `🔐 Mã xác nhận đặt lại mật khẩu hệ thống UBND Đắk Pring:\n\n` +
+      `🔐 Mã xác nhận đặt lại mật khẩu hệ thống UBND Đắc Pring:\n\n` +
       `     ${otp}\n\n` +
       `⏰ Mã có hiệu lực trong 5 phút.\n` +
       `⚠️ Không chia sẻ mã này cho bất kỳ ai.`

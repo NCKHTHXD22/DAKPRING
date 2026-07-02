@@ -55,12 +55,12 @@ function ComplaintMap({ points }) {
     // Auto-zoom vừa đủ bao phủ tất cả marker
     try { map.fitBounds(group.getBounds().pad(0.35)) } catch {}
 
-    // Lớp ranh giới xã Đắk Pring — thêm sau khi đã có center từ marker
+    // Lớp ranh giới xã Đắc Pring — thêm sau khi đã có center từ marker
     fetch(
       'https://nominatim.openstreetmap.org/search.php' +
-      '?q=X%C3%A3+%C4%90%E1%BA%AFk+Pring%2C+%C4%90%C3%A0+N%E1%BA%B5ng' +
+      '?q=X%C3%A3+%C4%90%E1%BA%AFc+Pring%2C+%C4%90%C3%A0+N%E1%BA%B5ng' +
       '&format=geojson&polygon_geojson=1&limit=1',
-      { headers: { 'User-Agent': 'UBND-DakPring-GoiY/1.0' } }
+      { headers: { 'User-Agent': 'UBND-DacPring-GoiY/1.0' } }
     )
       .then(r => r.json())
       .then(data => {
@@ -68,7 +68,7 @@ function ComplaintMap({ points }) {
         L.geoJSON(data, {
           style: { color: '#0068ff', weight: 2.5, fillColor: '#0068ff', fillOpacity: 0.06, dashArray: '5,4' },
         })
-          .bindPopup('<b style="color:#0068ff">Xã Đắk Pring</b><br>Thành phố Đà Nẵng')
+          .bindPopup('<b style="color:#0068ff">Xã Đắc Pring</b><br>Thành phố Đà Nẵng')
           .addTo(mapInstanceRef.current)
       })
       .catch(() => {})
@@ -110,7 +110,7 @@ export default function ZaloLoginGate({ loading, error }) {
     <div className="flex min-h-screen flex-col items-center justify-start bg-background p-4 gap-4 pt-6">
       <Card className="w-full max-w-sm animate-fade-in">
         <CardHeader className="text-center">
-          <CardTitle className="gradient-text text-xl">UBND Đắk Pring</CardTitle>
+          <CardTitle className="gradient-text text-xl">UBND Đắc Pring</CardTitle>
           <p className="text-sm text-muted-foreground">Góp ý - Phản ánh</p>
         </CardHeader>
         <CardContent className="space-y-4 text-center">

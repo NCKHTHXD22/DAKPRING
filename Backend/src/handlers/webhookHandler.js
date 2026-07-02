@@ -130,7 +130,7 @@ async function handleWebhook(body) {
   // Chào mừng khi follow OA
   if (eventName === 'follow') {
     await sendZaloText(userId,
-      'Xin chào! Chào mừng bạn quan tâm OA UBND Đắk Pring 🏛️\n\n' +
+      'Xin chào! Chào mừng bạn quan tâm OA UBND Đắc Pring 🏛️\n\n' +
       'Bạn có thể:\n' +
       '• 📝 Gửi góp ý, phản ánh — chọn "Góp ý" hoặc nhắn #goopy\n' +
       '• 🔍 Theo dõi phản ánh đã gửi — nhắn #theodoi\n' +
@@ -228,7 +228,7 @@ async function handleWebhook(body) {
       setLocalState(userId, 'catdien_active');
       clearCatDienTimer(userId);
       await sendZaloText(userId,
-        '⚡ Tra cứu lịch tạm ngừng cấp điện tại Đắk Pring.\n\n' +
+        '⚡ Tra cứu lịch tạm ngừng cấp điện tại Đắc Pring.\n\n' +
         'Nhập tên 📍 trạm hoặc 📅 ngày để tra cứu.\n' +
         'Ví dụ: Lộc Đại  hoặc  12/06\n\n' +
         '(Nhắn "tất cả" để xem toàn bộ · Nhắn "huỷ" để thoát)'

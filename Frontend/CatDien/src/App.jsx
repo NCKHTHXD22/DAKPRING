@@ -65,10 +65,10 @@ export default function App() {
       <div className="mx-auto max-w-md space-y-4">
         <Card className="animate-fade-in">
           <CardHeader className="flex-row items-center gap-2.5 space-y-0">
-            <img src="/LogoDakPring.jpg" alt="Đắk Pring" className="h-9 w-9 shrink-0 rounded-md object-contain" />
+            <img src="/LogoDakPring.jpg" alt="Đắc Pring" className="h-9 w-9 shrink-0 rounded-md object-contain" />
             <div>
               <CardTitle className="text-base font-bold">Tra cứu lịch cắt điện</CardTitle>
-              <p className="text-xs text-muted-foreground">UBND Đắk Pring · Nguồn: EVNCPC (Nam Giang)</p>
+              <p className="text-xs text-muted-foreground">UBND Đắc Pring · Nguồn: EVNCPC (Nam Giang)</p>
             </div>
           </CardHeader>
         </Card>

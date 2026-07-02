@@ -13,8 +13,20 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
 const now = new Date()
 const YEARS = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1]
 
+const CATEGORY_LABELS = {
+  cong: 'Người có công với cách mạng',
+  baotro: 'Bảo trợ xã hội hàng tháng',
+  ngheo: 'Hỗ trợ hộ nghèo, cận nghèo',
+  treem: 'Trợ cấp trẻ em & chính sách khác',
+}
+
 const EMPTY_FORM = {
   phuongCu: '', phuongMoi: '', ngayChiTra: '', khungGio: '', diaDiem: '', nhanVienTen: '', nhanVienSdt: '', ghiChu: '',
+  loaiTroCap: 'baotro', soLuong: '', donVi: 'người', soTien: '', hinhThuc: 'cash',
+}
+
+function formatMoney(n) {
+  return (n || 0).toLocaleString('vi-VN')
 }
 
 function formatDate(iso) {
@@ -73,6 +85,8 @@ export default function TroCapPage() {
       ngayChiTra: item.ngayChiTra ? item.ngayChiTra.slice(0, 10) : '',
       khungGio: item.khungGio || '', diaDiem: item.diaDiem || '',
       nhanVienTen: item.nhanVienTen || '', nhanVienSdt: item.nhanVienSdt || '', ghiChu: item.ghiChu || '',
+      loaiTroCap: item.loaiTroCap || 'baotro', soLuong: item.soLuong || '', donVi: item.donVi || 'người',
+      soTien: item.soTien || '', hinhThuc: item.hinhThuc || 'cash',
     })
     setShowForm(true)
   }
@@ -129,6 +143,39 @@ export default function TroCapPage() {
               <Label className="text-xs">Khung giờ</Label>
               <Input value={form.khungGio} onChange={(e) => setForm((f) => ({ ...f, khungGio: e.target.value }))} placeholder="VD: Buổi chiều từ 13h30 đến 17h00" />
             </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Nhóm đối tượng *</Label>
+              <select
+                value={form.loaiTroCap}
+                onChange={(e) => setForm((f) => ({ ...f, loaiTroCap: e.target.value }))}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                {Object.entries(CATEGORY_LABELS).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Hình thức chi trả</Label>
+              <select
+                value={form.hinhThuc}
+                onChange={(e) => setForm((f) => ({ ...f, hinhThuc: e.target.value }))}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="cash">Tiền mặt</option>
+                <option value="bank">Qua tài khoản</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Số lượng nhận</Label>
+              <Input type="number" min="0" value={form.soLuong} onChange={(e) => setForm((f) => ({ ...f, soLuong: e.target.value }))} placeholder="VD: 42" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Đơn vị tính</Label>
+              <Input value={form.donVi} onChange={(e) => setForm((f) => ({ ...f, donVi: e.target.value }))} placeholder="người / hộ / trẻ" />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <Label className="text-xs">Tổng kinh phí chi trả (đồng)</Label>
+              <Input type="number" min="0" value={form.soTien} onChange={(e) => setForm((f) => ({ ...f, soTien: e.target.value }))} placeholder="VD: 128500000" />
+            </div>
             <div className="space-y-1 md:col-span-2">
               <Label className="text-xs">Địa điểm chi trả *</Label>
               <Input value={form.diaDiem} onChange={(e) => setForm((f) => ({ ...f, diaDiem: e.target.value }))} placeholder="VD: Nhà văn hoá thôn..." required />
@@ -170,11 +217,11 @@ export default function TroCapPage() {
             <thead>
               <tr className="bg-gray-50 border-b">
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground w-8">#</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Phường cũ</th>
+                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Nhóm đối tượng</th>
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Phường mới</th>
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Thời gian chi trả</th>
                 <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Địa điểm</th>
-                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground hidden md:table-cell">Nhân viên</th>
+                <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground hidden md:table-cell">Kinh phí</th>
                 <th className="w-20"></th>
               </tr>
             </thead>
@@ -182,7 +229,7 @@ export default function TroCapPage() {
               {items.map((it, i) => (
                 <tr key={it._id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-muted-foreground text-xs">{i + 1}</td>
-                  <td className="px-4 py-3">{it.phuongCu || '—'}</td>
+                  <td className="px-4 py-3">{CATEGORY_LABELS[it.loaiTroCap] || '—'}</td>
                   <td className="px-4 py-3 font-medium">{it.phuongMoi}</td>
                   <td className="px-4 py-3">
                     <div className="font-medium">{formatDate(it.ngayChiTra)}</div>
@@ -190,7 +237,7 @@ export default function TroCapPage() {
                   </td>
                   <td className="px-4 py-3">{it.diaDiem}</td>
                   <td className="px-4 py-3 text-xs text-slate-500 hidden md:table-cell">
-                    {it.nhanVienTen}{it.nhanVienSdt ? ` · ${it.nhanVienSdt}` : ''}
+                    {formatMoney(it.soTien)}đ · {it.soLuong} {it.donVi}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">

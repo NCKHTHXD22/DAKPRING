@@ -40,14 +40,37 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+      },
       keyframes: {
         'fade-in': {
           from: { opacity: 0, transform: 'translateY(8px)' },
           to:   { opacity: 1, transform: 'translateY(0)' },
         },
+        'blob-a': {
+          '0%, 100%': { transform: 'translate(-8%, -6%) scale(1)' },
+          '50%':      { transform: 'translate(10%, 8%) scale(1.16)' },
+        },
+        'blob-b': {
+          '0%, 100%': { transform: 'translate(6%, 4%) scale(1.1)' },
+          '50%':      { transform: 'translate(-10%, -8%) scale(0.92)' },
+        },
+        'blob-c': {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '50%':      { transform: 'translate(-6%, 8%) scale(1.14)' },
+        },
+        sheen: {
+          '0%':   { transform: 'translateX(-140%) skewX(-18deg)' },
+          '100%': { transform: 'translateX(240%) skewX(-18deg)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.35s ease both',
+        'blob-a': 'blob-a 22s ease-in-out infinite',
+        'blob-b': 'blob-b 26s ease-in-out infinite',
+        'blob-c': 'blob-c 30s ease-in-out infinite',
+        sheen: 'sheen 3.6s ease-in-out infinite',
       },
     },
   },

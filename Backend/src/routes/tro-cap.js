@@ -23,14 +23,20 @@ router.get('/', async (req, res) => {
 // POST /api/tro-cap — tạo mới
 router.post('/', async (req, res) => {
   try {
-    const { phuongCu, phuongMoi, ngayChiTra, khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu } = req.body
+    const {
+      phuongCu, phuongMoi, ngayChiTra, khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu,
+      loaiTroCap, soLuong, donVi, soTien, hinhThuc,
+    } = req.body
     if (!phuongMoi || !ngayChiTra || !diaDiem) {
       return res.status(400).json({ error: 'Thiếu phường mới, ngày chi trả hoặc địa điểm' })
     }
     const item = await TroCapSchedule.create({
       phuongCu: phuongCu || '', phuongMoi, ngayChiTra: new Date(ngayChiTra),
       khungGio: khungGio || '', diaDiem, nhanVienTen: nhanVienTen || '', nhanVienSdt: nhanVienSdt || '',
-      ghiChu: ghiChu || '', createdBy: req.user?.id || null,
+      ghiChu: ghiChu || '',
+      loaiTroCap: loaiTroCap || 'baotro', soLuong: parseInt(soLuong) || 0, donVi: donVi || 'người',
+      soTien: parseInt(soTien) || 0, hinhThuc: hinhThuc || 'cash',
+      createdBy: req.user?.id || null,
     })
     res.status(201).json({ item })
   } catch (err) {
@@ -41,10 +47,16 @@ router.post('/', async (req, res) => {
 // PUT /api/tro-cap/:id — cập nhật
 router.put('/:id', async (req, res) => {
   try {
-    const { phuongCu, phuongMoi, ngayChiTra, khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu } = req.body
+    const {
+      phuongCu, phuongMoi, ngayChiTra, khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu,
+      loaiTroCap, soLuong, donVi, soTien, hinhThuc,
+    } = req.body
     await TroCapSchedule.findByIdAndUpdate(req.params.id, {
       phuongCu, phuongMoi, ngayChiTra: ngayChiTra ? new Date(ngayChiTra) : undefined,
-      khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu, updatedAt: new Date(),
+      khungGio, diaDiem, nhanVienTen, nhanVienSdt, ghiChu,
+      loaiTroCap, soLuong: soLuong !== undefined ? parseInt(soLuong) || 0 : undefined,
+      donVi, soTien: soTien !== undefined ? parseInt(soTien) || 0 : undefined, hinhThuc,
+      updatedAt: new Date(),
     })
     res.json({ ok: true })
   } catch (err) {

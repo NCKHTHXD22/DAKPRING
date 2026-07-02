@@ -4,54 +4,36 @@
 
 @layer base {
   :root {
-    --background: 210 25% 97%;
-    --foreground: 222 47% 11%;
+    --background: 250 60% 97%;
+    --foreground: 252 20% 22%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 217 91% 50%;
+    --card-foreground: 252 20% 22%;
+    --primary: 258 90% 66%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 50%;
-    --radius: 0.75rem;
+    --muted-foreground: 250 10% 55%;
+    --border: 255 40% 92%;
+    --radius: 1rem;
   }
 }
 
 @layer base {
   * { box-sizing: border-box; }
-  body { margin: 0; padding: 0; @apply font-sans antialiased; }
+  body { margin: 0; padding: 0; @apply font-sans antialiased; color: #38334f; }
+  input, select, button, textarea { font-family: inherit; }
+  input::placeholder { color: #a7a3bd; }
+  select option { background: #ffffff; color: #38334f; }
+  input[type='date']::-webkit-calendar-picker-indicator { opacity: 0.55; cursor: pointer; }
 }
 
-input::placeholder { color: rgba(240, 233, 220, 0.32); }
-select option { background: #10152a; color: #F2E9DC; }
-input[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(0.8) sepia(1) saturate(3) hue-rotate(5deg);
-  opacity: 0.6;
-  cursor: pointer;
-}
-
-/* Custom scrollbar (nền tối) */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(224, 184, 113, 0.35); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(224, 184, 113, 0.55); }
+::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.4); }
 
-/* Lưới nền mờ dần ra rìa */
-.grid-overlay {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-  background-size: 44px 44px;
-  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
-  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+/* Lưới chấm mờ dần, dùng cho nền trang */
+.dot-grid {
+  background-image: radial-gradient(rgba(120, 100, 190, 0.14) 1.4px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(130% 100% at 50% 0%, #000 40%, transparent 82%);
+  mask-image: radial-gradient(130% 100% at 50% 0%, #000 40%, transparent 82%);
 }

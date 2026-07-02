@@ -1,33 +1,35 @@
-import { useEffect, useState } from 'react'
-import { Search, Loader2, Wallet, MapPin, Clock, Phone, CalendarClock } from 'lucide-react'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { ShieldCheck } from 'lucide-react'
+import Hero from '@/components/Hero'
+import SelectorCard from '@/components/SelectorCard'
+import StatsAndChips from '@/components/StatsAndChips'
+import ScheduleCard from '@/components/ScheduleCard'
+import EmptyState from '@/components/EmptyState'
 import { api } from '@/lib/api'
 
-const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
 const now = new Date()
 const YEARS = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1]
 
-function formatDate(iso) {
-  const d = new Date(iso)
-  const p = (n) => String(n).padStart(2, '0')
-  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`
-}
+function pad(n) { return String(n).length < 2 ? '0' + n : '' + n }
 
 export default function App() {
   const [thang, setThang] = useState(now.getMonth() + 1)
   const [nam, setNam] = useState(now.getFullYear())
+  const [filter, setFilter] = useState('all')
   const [items, setItems] = useState([])
   const [searched, setSearched] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSearch() {
+  async function handleSearch(overrideThang, overrideNam) {
+    const m = overrideThang ?? thang
+    const y = overrideNam ?? nam
     setLoading(true)
     setError('')
     try {
-      const res = await api.get('/search', { params: { thang, nam } })
+      const res = await api.get('/search', { params: { thang: m, nam: y } })
       setItems(res.data.items || [])
+      setFilter('all')
       setSearched(true)
     } catch (err) {
       setError(err.response?.data?.error || 'Có lỗi xảy ra, vui lòng thử lại')
@@ -36,89 +38,70 @@ export default function App() {
     }
   }
 
-  useEffect(() => { handleSearch() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  function handleGoRecent() {
+    const m = now.getMonth() + 1, y = now.getFullYear()
+    setThang(m); setNam(y)
+    handleSearch(m, y)
+  }
+
+  const filteredItems = filter === 'all' ? items : items.filter((x) => x.loaiTroCap === filter)
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto max-w-md space-y-4">
-        <Card className="animate-fade-in">
-          <CardHeader className="flex-row items-center gap-2.5 space-y-0">
-            <img src="/LogoDakPring.jpg" alt="Đắc Pring" className="h-9 w-9 shrink-0 rounded-md object-contain" />
-            <div>
-              <CardTitle className="text-base font-bold flex items-center gap-1.5"><Wallet className="h-4 w-4 text-primary" /> Lịch chi trả trợ cấp</CardTitle>
-              <p className="text-xs text-muted-foreground">UBND Đắc Pring · Trợ cấp xã hội, người có công</p>
-            </div>
-          </CardHeader>
-        </Card>
+    <div className="relative overflow-hidden min-h-screen w-full flex justify-center px-[18px] py-[26px] pb-[34px]" style={{ background: '#eceefb' }}>
+      <div aria-hidden="true" className="absolute -top-[70px] -left-20 w-[280px] h-[280px] rounded-full pointer-events-none blur-[12px] animate-float-a" style={{ background: 'radial-gradient(circle,rgba(139,92,246,.5),transparent 68%)' }} />
+      <div aria-hidden="true" className="absolute top-10 -right-[90px] w-[260px] h-[260px] rounded-full pointer-events-none blur-[12px] animate-float-b" style={{ background: 'radial-gradient(circle,rgba(6,182,212,.42),transparent 68%)' }} />
+      <div aria-hidden="true" className="absolute -bottom-[90px] left-5 w-[300px] h-[300px] rounded-full pointer-events-none blur-[14px] animate-float-a-slow" style={{ background: 'radial-gradient(circle,rgba(251,113,133,.34),transparent 70%)' }} />
+      <div aria-hidden="true" className="absolute inset-0 dot-grid pointer-events-none" />
 
-        <div className="rounded-lg border bg-card p-4 space-y-3">
-          <p className="text-sm font-bold uppercase">Chọn tháng / năm</p>
-          <div className="flex gap-2">
-            <select
-              value={thang}
-              onChange={(e) => setThang(Number(e.target.value))}
-              className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm"
-            >
-              {MONTHS.map((m) => <option key={m} value={m}>Tháng {m}</option>)}
-            </select>
-            <select
-              value={nam}
-              onChange={(e) => setNam(Number(e.target.value))}
-              className="flex-1 h-10 rounded-md border border-input bg-background px-3 text-sm"
-            >
-              {YEARS.map((y) => <option key={y} value={y}>Năm {y}</option>)}
-            </select>
-          </div>
-          <Button className="w-full gap-2" size="lg" onClick={handleSearch} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            {loading ? 'Đang tìm kiếm...' : 'Tra cứu'}
-          </Button>
-        </div>
+      <div className="relative z-[1] w-full max-w-[430px] flex flex-col gap-4">
+        <Hero period={`${thang}/${nam}`} />
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        <SelectorCard
+          thang={thang} nam={nam}
+          onThang={setThang} onNam={setNam}
+          years={YEARS}
+          onSearch={() => handleSearch()}
+          loading={loading}
+        />
+
+        {error && <p className="text-sm text-red-500 px-1">{error}</p>}
 
         {searched && !loading && (
-          <p className="text-sm text-muted-foreground">
-            Có <span className="font-bold text-foreground">{items.length}</span> lịch chi trả trong tháng {thang}/{nam}
-          </p>
+          <StatsAndChips items={items} thang={thang} nam={nam} filter={filter} onFilter={setFilter} />
+        )}
+
+        {loading && (
+          <div className="flex flex-col gap-[13px]">
+            <div className="skel h-[150px] animate-shimmer" />
+            <div className="skel h-[150px] animate-shimmer" />
+            <div className="skel h-[150px] animate-shimmer" />
+          </div>
         )}
 
         {!loading && searched && items.length === 0 && (
-          <div className="rounded-lg border bg-card p-6 text-center space-y-2">
-            <CalendarClock className="h-8 w-8 text-muted-foreground mx-auto" />
-            <p className="text-sm text-muted-foreground">Chưa có lịch chi trả nào được công bố cho tháng này.</p>
-          </div>
+          <EmptyState thang={thang} nam={nam} onGoRecent={handleGoRecent} />
         )}
 
-        {!loading && items.length > 0 && (
-          <div className="space-y-2">
-            {items.map((it) => (
-              <div key={it._id} className="card-hover rounded-lg border bg-card p-4 space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-sm font-bold text-primary">{it.phuongMoi}</span>
-                  {it.phuongCu && it.phuongCu !== it.phuongMoi && (
-                    <span className="shrink-0 text-xs text-muted-foreground">(trước: {it.phuongCu})</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-                  <Clock className="h-4 w-4 text-primary shrink-0" />
-                  {formatDate(it.ngayChiTra)}{it.khungGio ? ` — ${it.khungGio}` : ''}
-                </div>
-                <div className="flex items-start gap-1.5 text-sm text-foreground">
-                  <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                  {it.diaDiem}
-                </div>
-                {(it.nhanVienTen || it.nhanVienSdt) && (
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Phone className="h-3.5 w-3.5 shrink-0" />
-                    {it.nhanVienTen}{it.nhanVienSdt ? ` · ĐT: ${it.nhanVienSdt}` : ''}
-                  </div>
-                )}
-                {it.ghiChu && <p className="text-xs text-muted-foreground italic">{it.ghiChu}</p>}
-              </div>
+        {!loading && searched && items.length > 0 && (
+          <div className="flex flex-col gap-[13px]">
+            {filteredItems.map((it, i) => (
+              <ScheduleCard
+                key={it._id}
+                item={it}
+                code={`DCP·${pad(thang)}·${pad(items.indexOf(it) + 1)}`}
+                delay={`${(i * 0.07).toFixed(2)}s`}
+              />
             ))}
           </div>
         )}
+
+        <div className="flex flex-col items-center gap-1.5 mt-1 pb-1.5">
+          <div className="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium text-[#94a3b8]">
+            <ShieldCheck className="h-3.5 w-3.5 text-[#10b981]" />
+            Dữ liệu công khai
+          </div>
+          <div className="text-[11.5px] text-[#a5adbe]">Cổng dịch vụ công trực tuyến xã Đắc Pring</div>
+        </div>
       </div>
     </div>
   )

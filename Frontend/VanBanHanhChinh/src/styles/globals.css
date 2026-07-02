@@ -28,36 +28,30 @@
 }
 
 @layer base {
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground font-sans antialiased; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; @apply font-sans antialiased; }
 }
 
-/* Custom scrollbar */
+input::placeholder { color: rgba(240, 233, 220, 0.32); }
+select option { background: #10152a; color: #F2E9DC; }
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(3) hue-rotate(5deg);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* Custom scrollbar (nền tối) */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-thumb { background: rgba(224, 184, 113, 0.35); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(224, 184, 113, 0.55); }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in { animation: fadeIn 0.35s ease both; }
-
-/* Card hover lift */
-.card-hover {
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
-}
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.12);
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #2563eb, #0ea5e9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Lưới nền mờ dần ra rìa */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
 }

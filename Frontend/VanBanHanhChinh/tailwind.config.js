@@ -44,14 +44,48 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      fontFamily: {
+        serif: ['"Playfair Display"', 'serif'],
+        sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+      },
       keyframes: {
         'fade-in': {
           from: { opacity: 0, transform: 'translateY(8px)' },
           to:   { opacity: 1, transform: 'translateY(0)' },
         },
+        'aurora-a': {
+          '0%, 100%': { transform: 'translate(-8%, -6%) scale(1)' },
+          '50%':      { transform: 'translate(10%, 8%) scale(1.18)' },
+        },
+        'aurora-b': {
+          '0%, 100%': { transform: 'translate(6%, 4%) scale(1.1)' },
+          '50%':      { transform: 'translate(-10%, -8%) scale(0.9)' },
+        },
+        'aurora-c': {
+          '0%, 100%': { transform: 'translate(0%, 0%) scale(1)' },
+          '50%':      { transform: 'translate(-6%, 10%) scale(1.15)' },
+        },
+        'reveal-up': {
+          from: { opacity: 0, transform: 'translateY(16px)' },
+          to:   { opacity: 1, transform: 'translateY(0)' },
+        },
+        sheen: {
+          '0%':   { transform: 'translateX(-140%) skewX(-18deg)' },
+          '100%': { transform: 'translateX(240%) skewX(-18deg)' },
+        },
+        'badge-pulse': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(224,184,113,0.5)' },
+          '50%':      { boxShadow: '0 0 0 6px rgba(224,184,113,0)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.35s ease both',
+        'aurora-a': 'aurora-a 20s ease-in-out infinite',
+        'aurora-b': 'aurora-b 24s ease-in-out infinite',
+        'aurora-c': 'aurora-c 28s ease-in-out infinite',
+        'reveal-up': 'reveal-up 0.55s cubic-bezier(.2,.75,.25,1) both',
+        sheen: 'sheen 3.6s ease-in-out infinite',
+        'badge-pulse': 'badge-pulse 2.4s ease-in-out infinite',
       },
     },
   },

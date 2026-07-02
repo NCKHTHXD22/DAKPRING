@@ -35,7 +35,7 @@ export default function ResultsList({ items, searched }) {
     <div className="space-y-2">
       <p className="text-sm font-bold text-foreground">Kết quả: {items.length} lịch tạm ngừng cấp điện</p>
       {items.map((it) => (
-        <div key={it._id} className="rounded-lg border bg-card p-4 space-y-1.5">
+        <div key={it._id} className="card-hover rounded-lg border bg-card p-4 space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-bold text-foreground">{it.stationName || '—'}</span>
             <span className={`text-xs font-bold text-white px-2.5 py-0.5 rounded whitespace-nowrap ${typeColor(it.outageType)}`}>

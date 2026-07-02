@@ -13,7 +13,7 @@ export default function ResultCard({ item }) {
       href={item.detailUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="block rounded-lg border bg-card p-4 space-y-1.5 hover:border-primary/50 transition-colors"
+      className="card-hover block rounded-lg border bg-card p-4 space-y-1.5 hover:border-primary/50"
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm font-bold text-primary">{item.soHieu || '—'}</span>

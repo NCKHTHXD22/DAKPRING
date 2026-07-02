@@ -324,6 +324,9 @@ require('./src/services/schedulerService').start();
 // ── Tự động đồng bộ lịch cắt điện EVNCPC (mỗi 30 phút) ──
 require('./src/services/catDienService').startAutoSync();
 
+// ── Tự động đồng bộ văn bản hành chính từ 1022.vn (mỗi ngày 3h sáng) ──
+require('./src/services/vanBanHanhChinhService').startAutoSync();
+
 // ── Nhắc lịch xử lý phản ánh sắp/đã quá hạn (mỗi 1 giờ) ──
 require('./src/services/deadlineReminderService').startDeadlineReminder();
 

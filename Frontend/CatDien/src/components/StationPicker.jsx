@@ -1,9 +1,21 @@
-import { useState } from 'react'
-import { ChevronUp, ChevronDown, MapPin, Check, Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ChevronUp, ChevronDown, MapPin, Check, Plus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+const MAX_VISIBLE = 300 // chống lag khi danh sách rất dài, giới hạn số dòng render mỗi lần
+
+// Bỏ dấu tiếng Việt để tìm kiếm không phân biệt dấu (người dùng hay gõ không dấu)
+function stripDiacritics(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+    .toLowerCase()
+}
+
 export default function StationPicker({ stations, loading, selected, onToggle, onSelectAll, allSelected }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   const summary =
     selected.size === 0
@@ -11,6 +23,12 @@ export default function StationPicker({ stations, loading, selected, onToggle, o
       : allSelected
         ? 'Đã chọn tất cả trạm'
         : `Đã chọn ${selected.size} trạm`
+
+  const filtered = useMemo(() => {
+    const q = stripDiacritics(search.trim())
+    const list = q ? stations.filter((s) => stripDiacritics(s).includes(q)) : stations
+    return list.slice(0, MAX_VISIBLE)
+  }, [stations, search])
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
@@ -21,7 +39,7 @@ export default function StationPicker({ stations, loading, selected, onToggle, o
       >
         <MapPin className="h-5 w-5 text-primary shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-bold uppercase">Danh sách trạm</div>
+          <div className="text-sm font-bold uppercase">Danh sách trạm {stations.length > 0 && `(${stations.length})`}</div>
           <div className="text-xs text-muted-foreground truncate">{summary}</div>
         </div>
         {open ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
@@ -48,8 +66,23 @@ export default function StationPicker({ stations, loading, selected, onToggle, o
                 <Plus className="h-4 w-4" />
               </button>
 
-              <div className="pt-1">
-                {stations.map((name) => {
+              {stations.length > 10 && (
+                <div className="relative pt-2">
+                  <Search className="absolute left-3 top-[1.15rem] h-4 w-4 text-muted-foreground" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Tìm tên trạm/thôn..."
+                    className="w-full h-9 rounded-md border border-input bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  />
+                </div>
+              )}
+
+              <div className="pt-1 max-h-80 overflow-y-auto">
+                {filtered.length === 0 && (
+                  <p className="text-sm text-muted-foreground py-3 text-center">Không tìm thấy trạm phù hợp.</p>
+                )}
+                {filtered.map((name) => {
                   const checked = selected.has(name)
                   return (
                     <button

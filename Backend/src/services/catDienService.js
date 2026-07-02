@@ -29,7 +29,7 @@ async function fetchOutagesForSubOrg(subOrgCode) {
   const to = new Date(); to.setDate(to.getDate() + DAYS_AHEAD); to.setHours(23, 59, 59, 0);
 
   const items = [];
-  for (let page = 1; page <= 50; page++) {
+  for (let page = 1; page <= 10; page++) {
     const res = await axios.get(CONFIG.EVNCPC_API_URL, {
       headers: { version: '1.0', Accept: 'application/json' },
       params: {
@@ -40,8 +40,9 @@ async function fetchOutagesForSubOrg(subOrgCode) {
     });
     const batch = res.data?.items || [];
     items.push(...batch);
-    if (batch.length === 0) break;
-    await new Promise(r => setTimeout(r, 500)); // Delay between pages
+    // EVNCPC trả hết lịch của đơn vị trong 1 trang (~10-30 mục < 100) → dừng ngay.
+    // (KHÔNG break theo length===0 + 50 trang: gây ~900 request/sync → rate-limit → bỏ qua đơn vị như Nam Giang)
+    if (batch.length < 100) break;
   }
   return items;
 }
@@ -87,9 +88,21 @@ async function fetchAllOutages() {
 
 // ─── Cào + lưu vào Mongo (upsert chống trùng) ───
 async function syncOutages() {
-  const docs = await fetchAllOutages();
+  // Chỉ cào ĐÚNG đơn vị của OA này (Nam Giang, phụ trách Đắk Pring) — 1 request/lần.
+  // Cào cả 18 đơn vị bị EVNCPC rate-limit (429) từ IP VPS → các đơn vị cuối (Nam Giang) bị bỏ qua.
+  const code = CONFIG.EVNCPC_SUBORG_CODE;
+  let items;
+  try {
+    items = await fetchOutagesForSubOrg(code);
+  } catch (e1) {
+    await new Promise((r) => setTimeout(r, 3000)); // 1 lần thử lại nếu lỗi tạm
+    try { items = await fetchOutagesForSubOrg(code); }
+    catch (e2) { console.error(`[CatDien] Cào đơn vị ${code} thất bại: ${e2.message}`); return 0; }
+  }
   let upserted = 0;
-  for (const doc of docs) {
+  for (const it of items) {
+    const doc = toDoc(it);
+    if (!doc.subOrgCode) doc.subOrgCode = code;
     if (!doc.stationCode || !doc.fromDate || !doc.toDate) continue;
     await PowerOutage.updateOne(
       { stationCode: doc.stationCode, fromDate: doc.fromDate, toDate: doc.toDate },
@@ -98,7 +111,7 @@ async function syncOutages() {
     );
     upserted++;
   }
-  console.log(`[CatDien] Đồng bộ ${upserted} lịch cắt điện toàn Điện lực Đà Nẵng`);
+  console.log(`[CatDien] Đồng bộ ${upserted} lịch cắt điện (đơn vị ${code})`);
   return upserted;
 }
 
@@ -132,6 +145,37 @@ async function getOutages(query = '', subOrgCode = CONFIG.EVNCPC_SUBORG_CODE) {
   }
 
   return PowerOutage.find(filter).sort({ fromDate: 1 }).limit(50).lean();
+}
+
+// ─── Danh sách tên trạm đã từng ghi nhận cho 1 đơn vị (phục vụ mini app CatDien) ───
+async function listStations(subOrgCode = CONFIG.EVNCPC_SUBORG_CODE) {
+  const filter = {};
+  if (subOrgCode && subOrgCode !== 'all') filter.subOrgCode = subOrgCode;
+  const names = await PowerOutage.distinct('stationName', filter);
+  return names.filter(Boolean).sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
+// ─── Tra cứu kết hợp trạm (nhiều) + ngày cụ thể (phục vụ mini app CatDien) ───
+async function getOutagesByStations(stationNames = [], dateStr = '', subOrgCode = CONFIG.EVNCPC_SUBORG_CODE) {
+  const filter = {};
+  if (subOrgCode && subOrgCode !== 'all') filter.subOrgCode = subOrgCode;
+  if (stationNames.length) filter.stationName = { $in: stationNames };
+
+  const dateMatch = (dateStr || '').trim().match(/^(\d{1,2})[/-](\d{1,2})(?:[/-](\d{4}))?$/);
+  if (dateMatch) {
+    const [, d, m, y] = dateMatch;
+    const year = y ? parseInt(y) : new Date().getFullYear();
+    filter.fromDate = {
+      $gte: new Date(Date.UTC(year, parseInt(m) - 1, parseInt(d), -7, 0, 0, 0)),
+      $lte: new Date(Date.UTC(year, parseInt(m) - 1, parseInt(d), 16, 59, 59, 999)),
+    };
+  } else {
+    const now = new Date();
+    const vnNow = new Date(now.getTime() + 7 * 3600000);
+    filter.toDate = { $gte: new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate(), -7, 0, 0, 0)) };
+  }
+
+  return PowerOutage.find(filter).sort({ fromDate: 1 }).limit(100).lean();
 }
 
 // ─── Render card ảnh + gửi qua Zalo ───
@@ -243,4 +287,8 @@ function startAutoSync() {
   console.log('[CatDien] Đã bật tự động đồng bộ lịch cắt điện (mỗi 30 phút)');
 }
 
-module.exports = { fetchSubOrgs, fetchOutagesForSubOrg, fetchAllOutages, syncOutages, getOutages, getCardHtml, sendOutageCard, startAutoSync };
+module.exports = {
+  fetchSubOrgs, fetchOutagesForSubOrg, fetchAllOutages, syncOutages,
+  getOutages, listStations, getOutagesByStations,
+  getCardHtml, sendOutageCard, startAutoSync,
+};

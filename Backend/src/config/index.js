@@ -24,5 +24,5 @@ module.exports = {
   EVNCPC_API_URL: process.env.EVNCPC_API_URL || 'https://cskh-api.cpc.vn/api/remote/outages/area',
   EVNCPC_ORG_LIST_URL: process.env.EVNCPC_ORG_LIST_URL || 'https://cskh-api.cpc.vn/api/remote/organizations',
   EVNCPC_ORG_CODE: process.env.EVNCPC_ORG_CODE || 'PP',          // Công ty Điện lực Đà Nẵng (cào toàn bộ)
-  EVNCPC_SUBORG_CODE: process.env.EVNCPC_SUBORG_CODE || 'PC05MM', // mặc định lọc khi tra cứu: Điện lực Đắk Pring
+  EVNCPC_SUBORG_CODE: process.env.EVNCPC_SUBORG_CODE || 'PC05PP', // mặc định lọc khi tra cứu: Điện lực Nam Giang (phụ trách Đắk Pring)
 };
